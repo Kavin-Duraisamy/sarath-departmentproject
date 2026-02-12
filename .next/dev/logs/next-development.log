@@ -1,0 +1,50 @@
+[00:00:45.354] Server  LOG      ✓ Ready in 36s
+[00:02:46.507] Server  LOG      ○ Compiling / ...
+[00:03:26.405] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770132221101}
+[00:03:37.541] Server  LOG     [NextAuth] Authorize called with: {}
+[00:03:37.969] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\[root-of-the-server]__653586b0._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.003] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next-auth_1810886e._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.057] Server  ERROR   E:\department-portal-2\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.097] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next_f977eb13._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.110] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.123] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.129] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.173] Server  ERROR   E:\department-portal-2\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.182] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.190] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:38.198] Server  ERROR   [NextAuth] Login request error: TypeError: fetch failed
+[00:03:38.336] Browser ERROR   Sign in failed: CredentialsSignin
+[00:03:45.181] Server  LOG     [NextAuth] Authorize called with: {}
+[00:03:45.200] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\[root-of-the-server]__653586b0._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.203] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next-auth_1810886e._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.215] Server  ERROR   E:\department-portal-2\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.224] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next_f977eb13._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.226] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.229] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.232] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.241] Server  ERROR   E:\department-portal-2\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.245] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.248] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:03:45.263] Server  ERROR   [NextAuth] Login request error: TypeError: fetch failed
+[00:03:45.400] Browser ERROR   Sign in failed: CredentialsSignin
+[12:44:07.736] Server  LOG     [NextAuth] Authorize called with: {}
+[12:44:52.297] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770177898664}
+[12:44:56.148] Server  LOG     [NextAuth] Authorize called with: {}
+[12:44:57.960] Server  LOG     [NextAuth] Authentication failed: "Internal server error"
+[12:44:57.973] Server  LOG     [NextAuth] Authentication failed: "Internal server error"
+[12:44:58.081] Browser ERROR   Sign in failed: CredentialsSignin
+[12:45:01.600] Server  LOG     [NextAuth] Authorize called with: {}
+[12:45:19.638] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770177925848}
+[12:45:25.824] Server  LOG     [NextAuth] Authorize called with: {}
+[12:45:32.063] Server  LOG     [NextAuth] Success: Authenticated as HOD
+[12:45:32.073] Server  LOG     [NextAuth] Authentication failed: "Invalid credentials"
+[12:45:33.084] Browser ERROR   Sign in failed: CredentialsSignin

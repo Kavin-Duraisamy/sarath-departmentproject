@@ -1,0 +1,74 @@
+[
+  {
+    "id": "admin-demo",
+    "username": "admin@example.com",
+    "password": "admin123",
+    "name": "System Admin",
+    "role": "admin",
+    "email": "admin@example.com",
+    "department": ""
+  },
+  {
+    "id": "hod-demo",
+    "username": "hod@example.com",
+    "password": "hod123",
+    "name": "HOD User",
+    "role": "hod",
+    "email": "hod@example.com",
+    "department": ""
+  },
+  {
+    "id": "placement-demo",
+    "username": "placement@example.com",
+    "password": "placement123",
+    "name": "Placement Officer",
+    "role": "placement",
+    "email": "placement@example.com",
+    "department": ""
+  },
+  {
+    "id": "faculty-demo",
+    "username": "faculty@example.com",
+    "password": "faculty123",
+    "name": "Faculty User",
+    "role": "faculty",
+    "email": "faculty@example.com",
+    "department": ""
+  },
+  {
+    "id": "1768835722090",
+    "username": "testhod",
+    "password": "test123",
+    "name": "Test HOD",
+    "role": "hod",
+    "department": "",
+    "email": ""
+  },
+  {
+    "id": "1768837089596",
+    "username": "nirmala",
+    "password": "nirmala",
+    "name": "NIRMALA S",
+    "role": "hod",
+    "department": "B.Sc Computer Science",
+    "email": "nirmalaseetharaman@gmail.com"
+  },
+  {
+    "id": "faculty-vp",
+    "username": "vp",
+    "password": "vp",
+    "name": "VP Faculty",
+    "role": "faculty",
+    "department": "B.Sc Computer Science",
+    "email": "vp@example.com"
+  },
+  {
+    "id": "1768841145235",
+    "username": "vpp",
+    "password": "vpp",
+    "name": "VISHNUPRIYA",
+    "role": "faculty",
+    "department": "B.Sc Computer Science",
+    "email": "vp@gmail.com"
+  }
+]

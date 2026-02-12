@@ -1,0 +1,344 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Staff Users (Admin, HOD, Placement, Faculty)
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  email       String?  @unique
+  password    String   // Hashed with bcrypt
+  name        String
+  role        Role     @default(FACULTY)
+  department  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  notifications Notification[]
+  projects      Project[]      @relation("FacultyProjects")
+
+  @@index([username])
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  HOD
+  PLACEMENT
+  FACULTY
+  STUDENT
+}
+
+// Students
+model Student {
+  id              String   @id @default(cuid())
+  rollNumber      String   @unique
+  name            String
+  email           String   @unique
+  phone           String
+  year            Year
+  department      String
+  batch           String
+  dob             String   // Used as password (YYYY-MM-DD)
+  password        String   // Hashed DOB
+  
+  // Profile fields
+  profilePic      String?
+  address         String?
+  bloodGroup      String?
+  fatherName      String?
+  fatherPhone     String?
+  motherName      String?
+  motherPhone     String?
+  guardianName    String?
+  guardianPhone   String?
+  skills          String?  // JSON array
+  communicationCategory String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  academicRecords AcademicRecord[]
+  internships     Internship[]
+  resumes         Resume[]
+  certificates    Certificate[]
+  projects        Project[]
+  applications    PlacementApplication[]
+  notifications   Notification[]
+
+  @@index([rollNumber])
+  @@index([department])
+  @@index([year])
+  @@map("students")
+}
+
+enum Year {
+  I
+  II
+  III
+}
+
+// Academic Records
+model AcademicRecord {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  semester   String
+  cgpa       Float?
+  sgpa       Float?
+  arrears    Int?
+  percentage Float?
+  subjects   String   // JSON array of subjects with marks
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([studentId])
+  @@map("academic_records")
+}
+
+// Internships
+model Internship {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  company     String
+  role        String
+  duration    String
+  description String?
+  certificate String?  // Cloudinary URL
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([studentId])
+  @@map("internships")
+}
+
+// Resumes
+model Resume {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  title      String
+  fileUrl    String   // Cloudinary URL
+  uploadedAt DateTime @default(now())
+
+  @@index([studentId])
+  @@map("resumes")
+}
+
+// Certificates
+model Certificate {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  title      String
+  issuer     String?
+  fileUrl    String   // Cloudinary URL
+  issuedDate String?
+  uploadedAt DateTime @default(now())
+
+  @@index([studentId])
+  @@map("certificates")
+}
+
+// Projects
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  techStack   String?  // JSON array
+  technologies String? // Specific for frontend string input
+  githubUrl   String?
+  liveUrl     String?
+  
+  type        ProjectType @default(OTHER)
+  status      ProjectStatus @default(pending)
+  guideName   String?
+  guideEmail  String?
+  duration    String?
+  
+  // Can be student or faculty project
+  studentId   String?
+  student     Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  facultyId   String?
+  faculty     User?    @relation("FacultyProjects", fields: [facultyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([facultyId])
+  @@map("projects")
+}
+
+// Departments
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  hodName     String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  timetables  Timetable[]
+  timetableSettings TimetableSettings?
+
+  @@map("departments")
+}
+
+// Timetable Settings
+model TimetableSettings {
+  id            String     @id @default(cuid())
+  departmentId  String     @unique
+  department    Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  
+  startTime     String     // e.g., "09:00"
+  endTime       String     // e.g., "16:00"
+  slotDuration  Int        // in minutes
+  breakSlots    String     // JSON array of break times
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("timetable_settings")
+}
+
+// Timetable Entries
+model Timetable {
+  id            String     @id @default(cuid())
+  departmentId  String
+  department    Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  
+  year          Year
+  day           String     // Monday, Tuesday, etc.
+  timeSlot      String     // e.g., "09:00-10:00"
+  subject       String
+  facultyName   String
+  roomNumber    String?
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([departmentId])
+  @@index([year])
+  @@map("timetables")
+}
+
+// Placement Companies
+model PlacementCompany {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  website         String?
+  logoUrl         String?  // Cloudinary URL
+  
+  package         String?  // Salary package
+  eligibility     String?  // JSON array
+  jobRole         String?
+  location        String?
+  
+  applicationDeadline String?
+  driveDate       String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  applications    PlacementApplication[]
+
+  @@map("placement_companies")
+}
+
+// Placement Applications
+model PlacementApplication {
+  id         String           @id @default(cuid())
+  studentId  String
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  companyId  String
+  company    PlacementCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  status     ApplicationStatus @default(APPLIED)
+  appliedAt  DateTime         @default(now())
+  
+  resumeUrl  String?          // Cloudinary URL
+  coverLetter String?
+  
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([studentId, companyId])
+  @@index([studentId])
+  @@index([companyId])
+  @@map("placement_applications")
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  REJECTED
+  SELECTED
+}
+
+// Notifications
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  
+  // Can be for user or student
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([studentId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  SUCCESS
+  ERROR
+}
+
+enum ProjectType {
+  INTERNSHIP
+  FINAL_YEAR
+  OTHER
+}
+
+enum ProjectStatus {
+  pending
+  approved
+  rejected
+}
