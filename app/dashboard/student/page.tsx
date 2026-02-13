@@ -11,6 +11,7 @@ import { InternshipsTab } from "@/components/student/internships-tab"
 import { ResumesTab } from "@/components/student/resumes-tab"
 import { ProjectsTab } from "@/components/student/projects-tab"
 import { CertificatesTab } from "@/components/student/certificates-tab"
+import { PlacementTab } from "@/components/student/placement-tab"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { apiClient } from "@/lib/api"
 
@@ -68,7 +69,7 @@ export default function StudentDashboard() {
         id: userData.id,
         name: userData.name,
         email: userData.email,
-        rollNumber: userData.rollNumber || "Unknown",
+        rollNumber: (userData as any).rollNumber || "Unknown",
         year: "I",
         department: userData.department || "CSE"
       });
@@ -147,7 +148,7 @@ export default function StudentDashboard() {
         </div>
 
         <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="basic">
               <User className="h-4 w-4 mr-2" />
               Basic Info
@@ -171,6 +172,10 @@ export default function StudentDashboard() {
             <TabsTrigger value="projects">
               <FolderGit2 className="h-4 w-4 mr-2" />
               Projects
+            </TabsTrigger>
+            <TabsTrigger value="placement">
+              <Briefcase className="h-4 w-4 mr-2" />
+              Placement
             </TabsTrigger>
           </TabsList>
 
@@ -196,6 +201,10 @@ export default function StudentDashboard() {
 
           <TabsContent value="projects">
             <ProjectsTab studentId={studentData.id} studentYear={studentData.year} />
+          </TabsContent>
+
+          <TabsContent value="placement">
+            <PlacementTab studentId={studentData.id} />
           </TabsContent>
         </Tabs>
       </main>

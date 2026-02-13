@@ -28,6 +28,18 @@ function readStaffUsers(): StaffUser[] {
     }
 }
 
+function logDebug(message: string, data?: any) {
+    try {
+        const logPath = path.join(process.cwd(), 'auth-debug.log');
+        const timestamp = new Date().toISOString();
+        const start = `\n[${timestamp}] ${message}\n`;
+        const payload = data ? JSON.stringify(data, null, 2) + '\n' : '';
+        fs.appendFileSync(logPath, start + payload);
+    } catch (e) {
+        console.error("Failed to write to debug log", e);
+    }
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -38,13 +50,18 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 console.log("[NextAuth] Authorize called with:", credentials)
+                logDebug("Authorize called", { email: credentials?.email });
 
                 if (!credentials?.email || !credentials?.password) {
+                    logDebug("Missing credentials");
                     return null
                 }
 
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+                    logDebug(`Fetching ${apiUrl}`);
+
+                    const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -53,10 +70,13 @@ export const authOptions: NextAuthOptions = {
                         })
                     });
 
+                    logDebug("Response status", response.status);
+
                     const data = await response.json();
 
                     if (response.ok && data.user) {
                         console.log(`[NextAuth] Success: Authenticated as ${data.user.role}`);
+                        logDebug("Login Success", { role: data.user.role });
                         return {
                             id: data.user.id,
                             name: data.user.name,
@@ -69,9 +89,11 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     console.log("[NextAuth] Authentication failed:", data.error || "Unknown error");
+                    logDebug("Authentication failed", data);
                     return null;
-                } catch (error) {
+                } catch (error: any) {
                     console.error("[NextAuth] Login request error:", error);
+                    logDebug("Login Request Error", { message: error.message, stack: error.stack });
                     return null;
                 }
             }

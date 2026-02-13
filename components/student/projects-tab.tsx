@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import api, { apiClient } from "@/lib/api"
+import { format } from "date-fns"
 
 type ProjectsProps = {
   studentId: string
@@ -29,6 +30,9 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
     guide: "",
     guideEmail: "",
     status: "pending",
+    remarks: "",
+    approvedAt: null as string | null,
+    history: [] as any[]
   })
   const [finalProject, setFinalProject] = useState({
     id: "",
@@ -38,6 +42,9 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
     guide: "",
     guideEmail: "",
     status: "pending",
+    remarks: "",
+    approvedAt: null as string | null,
+    history: [] as any[]
   })
 
   // Fetch projects
@@ -57,7 +64,10 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
             duration: intern.duration || "",
             guide: intern.guideName || "",
             guideEmail: intern.guideEmail || "",
-            status: intern.status || "pending"
+            status: intern.status || "pending",
+            remarks: intern.remarks || "",
+            approvedAt: intern.approvedAt || null,
+            history: intern.history || []
           });
         }
         if (final) {
@@ -68,7 +78,10 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
             technologies: final.technologies || final.techStack || "",
             guide: final.guideName || "",
             guideEmail: final.guideEmail || "",
-            status: final.status || "pending"
+            status: final.status || "pending",
+            remarks: final.remarks || "",
+            approvedAt: final.approvedAt || null,
+            history: final.history || []
           });
         }
       }
@@ -78,19 +91,34 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
   }
 
   useEffect(() => {
-    // Load faculty for dropdown (keep using localStorage for faculty list as that might be static or fetched elsewhere)
-    // Actually faculty list should probably come from API too, but let's stick to localStorage for that reference data if it works.
-    const faculty = JSON.parse(localStorage.getItem("faculty") || "[]")
-    const staffLogins = JSON.parse(localStorage.getItem("staffLogins") || "[]")
-    const hodUser = staffLogins.find((u: any) => u.role === "hod")
+    const loadFaculty = async () => {
+      try {
+        // Fetch faculty from API (now allows students to see faculty in their department)
+        const res = await apiClient.getUsers();
+        if (res.data) {
+          const facultyOptions = res.data.map((u: any) => ({
+            name: u.name,
+            email: u.email || u.username,
+            role: u.role === 'HOD' ? 'HOD' : 'Faculty'
+          }));
+          setFacultyList(facultyOptions);
+        }
+      } catch (error) {
+        console.error("Failed to load faculty list", error);
+        // Fallback to localStorage if API fails (legacy support)
+        const faculty = JSON.parse(localStorage.getItem("faculty") || "[]");
+        const staffLogins = JSON.parse(localStorage.getItem("staffLogins") || "[]");
+        const hodUser = staffLogins.find((u: any) => u.role === "hod");
 
-    const facultyOptions = [
-      ...(hodUser ? [{ name: hodUser.name || "HOD", email: hodUser.username, role: "HOD" }] : []),
-      ...faculty.map((f: any) => ({ name: f.name, email: f.email, role: "Faculty" })),
-    ]
+        const facultyOptions = [
+          ...(hodUser ? [{ name: hodUser.name || "HOD", email: hodUser.username, role: "HOD" }] : []),
+          ...faculty.map((f: any) => ({ name: f.name, email: f.email, role: "Faculty" })),
+        ];
+        setFacultyList(facultyOptions);
+      }
+    };
 
-    setFacultyList(facultyOptions)
-
+    loadFaculty();
     fetchProjects();
   }, [studentId])
 
@@ -105,18 +133,20 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
         title: projectData.title,
         description: projectData.description,
         technologies: projectData.technologies,
-        duration: projectData.duration, // Optional for final year
+        duration: projectData.duration,
         guide: projectData.guide,
         guideEmail: projectData.guideEmail,
         type: type,
-        status: "pending" // Reset status on edit? Or keep? Schema default is pending. 
+        status: "pending", // Reset status on edit
+        remarks: "", // Reset remarks on edit (or keep, but usually new submission resets)
+        approvedAt: null
       });
 
       if (res.status === 200 || res.status === 201) {
         const saved = res.data;
         setIdFn(saved.id); // Update local ID
         alert("Project saved successfully!");
-        fetchProjects();
+        fetchProjects(); // Refresh to ensure sync
       } else {
         alert("Failed to save project");
       }
@@ -136,6 +166,46 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
     setIsEditingFinal(false)
   }
 
+  const HistoryTimeline = ({ history }: { history: any[] }) => {
+    if (!history || history.length === 0) return null;
+    return (
+      <div className="mt-6 space-y-4">
+        <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground pl-1">Approval Journey</h4>
+        <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-muted before:via-muted before:to-transparent">
+          {history.map((item, index) => (
+            <div key={item.id || index} className="relative flex items-start gap-6 group">
+              <div className={`mt-1.5 h-10 w-10 rounded-full border-4 border-background flex items-center justify-center shrink-0 z-10 shadow-sm transition-transform group-hover:scale-110 ${item.status === 'approved' ? 'bg-green-500 text-white' :
+                  item.status === 'rejected' ? 'bg-red-500 text-white' : 'bg-orange-500 text-white'
+                }`}>
+                <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+              </div>
+              <div className="flex-1 bg-muted/30 hover:bg-muted/50 transition-colors p-4 rounded-2xl border border-muted/50">
+                <div className="flex items-center justify-between mb-1">
+                  <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-tighter ${item.status === 'approved' ? 'border-green-200 bg-green-50 text-green-700' :
+                      item.status === 'rejected' ? 'border-red-200 bg-red-50 text-red-700' :
+                        'border-orange-200 bg-orange-50 text-orange-700'
+                    }`}>
+                    {item.status}
+                  </Badge>
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    {format(new Date(item.createdAt), "MMM d, yyyy • p")}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-gray-900 leading-snug">{item.remarks}</p>
+                <div className="mt-2 flex items-center gap-1.5">
+                  <div className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-[8px] font-bold">
+                    {item.actionBy?.[0] || 'U'}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">By <span className="font-bold">{item.actionBy || 'Unknown'}</span></p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -151,6 +221,7 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
               <Badge variant="outline">Optional</Badge>
               {internProject.status === "approved" && <Badge variant="default">Approved</Badge>}
               {internProject.status === "rejected" && <Badge variant="destructive">Rejected</Badge>}
+              {internProject.status === "pending" && internProject.id && <Badge variant="secondary">Pending Approval</Badge>}
             </div>
             {!isEditingIntern ? (
               <Button onClick={() => setIsEditingIntern(true)}>
@@ -242,6 +313,20 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
               <p className="text-sm text-muted-foreground">Guide: {internProject.guide}</p>
             )}
           </div>
+
+          {internProject.remarks && (
+            <div className="bg-muted p-4 rounded-md border mt-4">
+              <h4 className="text-sm font-semibold mb-1">Active Status Remarks</h4>
+              <p className="text-sm text-muted-foreground mb-2">{internProject.remarks}</p>
+              {internProject.approvedAt && internProject.status === 'approved' && (
+                <p className="text-xs text-muted-foreground pt-2 border-t mt-2">
+                  Finalized on: {format(new Date(internProject.approvedAt), "PPP p")}
+                </p>
+              )}
+            </div>
+          )}
+
+          <HistoryTimeline history={internProject.history} />
         </CardContent>
       </Card>
 
@@ -255,6 +340,7 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
                   <Badge variant="default">Available</Badge>
                   {finalProject.status === "approved" && <Badge variant="default">Approved</Badge>}
                   {finalProject.status === "rejected" && <Badge variant="destructive">Rejected</Badge>}
+                  {finalProject.status === "pending" && finalProject.id && <Badge variant="secondary">Pending Approval</Badge>}
                 </>
               ) : (
                 <Badge variant="secondary">Unlocks in Year III</Badge>
@@ -345,6 +431,20 @@ export function ProjectsTab({ studentId, studentYear }: ProjectsProps) {
                   <p className="text-sm text-muted-foreground">Guide: {finalProject.guide}</p>
                 )}
               </div>
+
+              {finalProject.remarks && (
+                <div className="bg-muted p-4 rounded-md border mt-4">
+                  <h4 className="text-sm font-semibold mb-1">Active Status Remarks</h4>
+                  <p className="text-sm text-muted-foreground mb-2">{finalProject.remarks}</p>
+                  {finalProject.approvedAt && finalProject.status === 'approved' && (
+                    <p className="text-xs text-muted-foreground pt-2 border-t mt-2">
+                      Finalized on: {format(new Date(finalProject.approvedAt), "PPP p")}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <HistoryTimeline history={finalProject.history} />
             </>
           )}
         </CardContent>

@@ -5,6 +5,12 @@ import authRoutes from './routes/auth.routes';
 import usersRoutes from './routes/users.routes';
 import studentsRoutes from './routes/students.routes';
 import uploadRoutes from './routes/upload.routes';
+import progressionRoutes from './routes/progression.routes';
+import placementRoutes from './routes/placement.routes';
+import notificationRoutes from './routes/notifications.routes';
+import timetableRoutes from './routes/timetable.routes';
+import departmentRoutes from './routes/departments.routes';
+import settingsRoutes from './routes/settings.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 // Load environment variables
@@ -23,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logger for debugging
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
@@ -38,6 +44,12 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/students', studentsRoutes);
 app.use('/api/v1/upload', uploadRoutes);
+app.use('/api/v1/progression', progressionRoutes);
+app.use('/api/v1/placement', placementRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/timetable', timetableRoutes);
+app.use('/api/v1/departments', departmentRoutes);
+app.use('/api/v1/settings', settingsRoutes);
 
 // Error handler (must be last)
 app.use(errorHandler);

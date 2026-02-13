@@ -1,0 +1,50 @@
+Departments in DB: [
+  "B.Sc Computer Science",
+  "AI & Data Science",
+  "Commerce",
+  "Mathematics"
+]
+Staff Users: [
+  {
+    "id": "cmlj5byh1000111y5mkv85wsw",
+    "username": "hod",
+    "name": "Common HOD",
+    "role": "HOD",
+    "department": null
+  },
+  {
+    "id": "cmlj5bzh6000411y5pjfhztwo",
+    "username": "vp",
+    "name": "VP Faculty",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science"
+  },
+  {
+    "id": "cmlj5p9zj00028ocr3s4c67b7",
+    "username": "nirmala",
+    "name": "NIRMALA",
+    "role": "HOD",
+    "department": "B.Sc Computer Science with Cognitive Systems"
+  },
+  {
+    "id": "cmlj60vpg001u8ocrl8ocimr5",
+    "username": "kavin",
+    "name": "kavin",
+    "role": "HOD",
+    "department": "bca"
+  },
+  {
+    "id": "cmlkicvqh0000jad09xfkru2u",
+    "username": "srinath",
+    "name": "SRINATH",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science with Cognitive Systems"
+  },
+  {
+    "id": "cmlkidrcz0001jad02mh3w92e",
+    "username": "senthil",
+    "name": "SENTHIL",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science with Cognitive Systems"
+  }
+]

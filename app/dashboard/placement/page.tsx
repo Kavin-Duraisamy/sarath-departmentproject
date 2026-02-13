@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
+import { apiClient } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, Users, TrendingUp, LogOut, Briefcase } from "lucide-react"
 
 export default function PlacementDashboard() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
   const [stats, setStats] = useState({
     totalCompanies: 0,
@@ -17,36 +20,49 @@ export default function PlacementDashboard() {
   })
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
+    if (status === "loading") return
+    if (status === "unauthenticated") {
       router.push("/")
       return
     }
 
-    const userData = JSON.parse(storedUser)
-    if (userData.role !== "placement") {
-      router.push(`/dashboard/${userData.role}`)
+    const userData = session?.user
+    if (!userData || userData.role?.toLowerCase() !== "placement") {
+      router.push("/")
       return
     }
 
+    // Sync accessToken to localStorage for apiClient
+    if ((session as any)?.accessToken) {
+      localStorage.setItem("accessToken", (session as any).accessToken);
+    }
+
     setUser(userData)
+    fetchDashboardStats()
+  }, [router, session, status])
 
-    // Load placement data
-    const companies = JSON.parse(localStorage.getItem("companies") || "[]")
-    const applications = JSON.parse(localStorage.getItem("applications") || "[]")
-    const placedStudents = applications.filter((app: any) => app.status === "placed")
+  const fetchDashboardStats = async () => {
+    try {
+      const companiesResponse = await apiClient.getCompanies()
+      const applicationsResponse = await apiClient.getApplications()
 
-    setStats({
-      totalCompanies: companies.length,
-      totalApplications: applications.length,
-      placedStudents: placedStudents.length,
-      activeJobs: companies.filter((c: any) => c.status === "active").length,
-    })
-  }, [router])
+      const companies = companiesResponse.data
+      const applications = applicationsResponse.data
+      const placedStudents = applications.filter((app: any) => app.status === "SELECTED")
+
+      setStats({
+        totalCompanies: companies.length,
+        totalApplications: applications.length,
+        placedStudents: placedStudents.length,
+        activeJobs: companies.length, // Until I add status field to schema
+      })
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats", error)
+    }
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem("user")
-    router.push("/")
+    signOut({ callbackUrl: "/" })
   }
 
   if (!user) {

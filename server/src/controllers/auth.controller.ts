@@ -41,6 +41,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             const accessToken = generateAccessToken({
                 id: user.id,
                 username: user.username,
+                name: user.name,
+                email: user.email,
                 role: user.role,
                 department: user.department,
             });
@@ -48,6 +50,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             const refreshToken = generateRefreshToken({
                 id: user.id,
                 username: user.username,
+                name: user.name,
+                email: user.email,
                 role: user.role,
                 department: user.department,
             });
@@ -91,6 +95,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             const accessToken = generateAccessToken({
                 id: student.id,
                 username: student.rollNumber,
+                name: student.name,
+                email: student.email,
                 role: 'STUDENT',
                 department: student.department,
             });
@@ -98,6 +104,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             const refreshToken = generateRefreshToken({
                 id: student.id,
                 username: student.rollNumber,
+                name: student.name,
+                email: student.email,
                 role: 'STUDENT',
                 department: student.department,
             });
@@ -143,6 +151,8 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
         const newAccessToken = generateAccessToken({
             id: decoded.id,
             username: decoded.username,
+            name: decoded.name,
+            email: decoded.email,
             role: decoded.role,
             department: decoded.department,
         });

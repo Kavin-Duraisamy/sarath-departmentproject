@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import * as XLSX from "xlsx"
+import { apiClient } from "@/lib/api"
+import { format } from "date-fns"
 import {
   Dialog,
   DialogContent,
@@ -129,18 +131,31 @@ export default function FacultyManagementPage() {
       department: department || ""
     }))
 
-    // Load faculty from localStorage
-    const storedFaculty = localStorage.getItem("faculty")
-    if (storedFaculty) {
-      const parsedFaculty = JSON.parse(storedFaculty)
-      const departmentFilteredFaculty = department
-        ? parsedFaculty.filter((f: Faculty) => f.department === department)
-        : parsedFaculty
-
-      setFaculty(departmentFilteredFaculty)
-      setFilteredFaculty(departmentFilteredFaculty)
-    }
+    fetchFaculty()
   }, [session, status, router])
+
+  const fetchFaculty = async () => {
+    try {
+      const response = await apiClient.getUsers()
+      // Filter for FACULTY only (the API might return others if role doesn't filter perfectly)
+      const facultyUsers = response.data
+        .filter((u: any) => u.role === 'FACULTY')
+        .map((u: any) => ({
+          ...u,
+          subjects: u.subjects || [],
+          assignedYears: u.assignedYears || []
+        }))
+      setFaculty(facultyUsers)
+      setFilteredFaculty(facultyUsers)
+    } catch (error) {
+      console.error("Failed to fetch faculty", error)
+      toast({
+        title: "Error",
+        description: "Failed to load faculty members",
+        variant: "destructive",
+      })
+    }
+  }
 
   // Search and filter effect
   useEffect(() => {
@@ -150,13 +165,13 @@ export default function FacultyManagementPage() {
       filtered = filtered.filter(
         (f) =>
           f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          f.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          f.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+          f.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          f.subjects?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     }
 
     if (yearFilter !== "all") {
-      filtered = filtered.filter((f) => f.assignedYears.includes(yearFilter))
+      filtered = filtered.filter((f) => f.assignedYears?.includes(yearFilter))
     }
 
     setFilteredFaculty(filtered)
@@ -176,28 +191,7 @@ export default function FacultyManagementPage() {
 
     if (isEditMode && editingFacultyId) {
       // Edit existing faculty
-      const updatedFaculty = faculty.map(f =>
-        f.id === editingFacultyId
-          ? {
-            ...f,
-            name: formData.name,
-            email: formData.email,
-            department: formData.department,
-            phone: formData.phone,
-            subjects: formData.subjects.split(",").map((s) => s.trim()),
-            assignedYears: formData.assignedYears,
-            username: formData.username,
-            classesCount: formData.classesCount,
-            feedbackScore: formData.feedbackScore,
-            projectsSupervised: formData.projectsSupervised,
-          }
-          : f
-      )
-
-      setFaculty(updatedFaculty)
-      localStorage.setItem("faculty", JSON.stringify(updatedFaculty))
-
-      // Update staff-users.json via API
+      // Update staff-user via API
       updateStaffUser(editingFacultyId, formData)
 
       toast({
@@ -206,26 +200,21 @@ export default function FacultyManagementPage() {
       })
     } else {
       // Add new faculty
-      const newFaculty: Faculty = {
-        id: Date.now().toString(),
+      // We create a temporary object, but the real one will come from API
+      const newFacultyData = {
         name: formData.name,
         email: formData.email,
         department: formData.department,
         phone: formData.phone,
-        subjects: formData.subjects.split(",").map((s) => s.trim()),
+        subjects: formData.subjects.trim() === "" ? [] : formData.subjects.split(",").map((s) => s.trim()),
         assignedYears: formData.assignedYears,
         username: formData.username,
-        classesCount: formData.classesCount || 0,
-        feedbackScore: formData.feedbackScore || 0,
-        projectsSupervised: formData.projectsSupervised || 0,
+        password: formData.password,
+        role: "FACULTY"
       }
 
-      const updatedFaculty = [...faculty, newFaculty]
-      setFaculty(updatedFaculty)
-      localStorage.setItem("faculty", JSON.stringify(updatedFaculty))
-
-      // Add to staff-users.json
-      addStaffUser(newFaculty, formData.password)
+      // Add to DB
+      addStaffUser(newFacultyData)
 
       toast({
         title: "Success",
@@ -237,35 +226,15 @@ export default function FacultyManagementPage() {
     setIsDialogOpen(false)
   }
 
-  const addStaffUser = async (faculty: Faculty, password: string) => {
+  const addStaffUser = async (userData: any) => {
     try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: faculty.username,
-          password: password,
-          name: faculty.name,
-          role: "faculty",
-          department: faculty.department,
-          email: faculty.email,
-        })
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        console.error("Error adding staff user:", error)
-        toast({
-          title: "Warning",
-          description: "Faculty added to system but login may not work. Please contact admin.",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
+      await apiClient.createUser(userData)
+      fetchFaculty() // Refresh list from DB
+    } catch (error: any) {
       console.error("Error adding staff user:", error)
       toast({
-        title: "Warning",
-        description: "Faculty added to system but login may not work. Please contact admin.",
+        title: "Error",
+        description: error.response?.data?.error || "Failed to add faculty to system",
         variant: "destructive",
       })
     }
@@ -273,11 +242,27 @@ export default function FacultyManagementPage() {
 
   const updateStaffUser = async (facultyId: string, formData: any) => {
     try {
-      // Note: Would need PUT endpoint for updates
-      // For now, just log
-      console.log("Update staff user:", facultyId, formData)
-    } catch (error) {
+      await apiClient.updateUser(facultyId, {
+        name: formData.name,
+        email: formData.email,
+        username: formData.username,
+        ...(formData.password ? { password: formData.password } : {}),
+        department: formData.department,
+        assignedYears: formData.assignedYears,
+        subjects: formData.subjects.trim() === "" ? [] : formData.subjects.split(",").map((s: string) => s.trim()),
+      })
+      toast({
+        title: "Success",
+        description: "Faculty updated successfully",
+      })
+      fetchFaculty() // Refresh
+    } catch (error: any) {
       console.error("Error updating staff user:", error)
+      toast({
+        title: "Error",
+        description: error.response?.data?.error || "Failed to update faculty member",
+        variant: "destructive",
+      })
     }
   }
 
@@ -289,8 +274,8 @@ export default function FacultyManagementPage() {
       email: faculty.email,
       department: faculty.department,
       phone: faculty.phone,
-      subjects: faculty.subjects.join(", "),
-      assignedYears: faculty.assignedYears,
+      subjects: (faculty.subjects || []).join(", "),
+      assignedYears: faculty.assignedYears || [],
       username: faculty.username,
       password: "", // Don't show password
       classesCount: faculty.classesCount || 0,
@@ -300,30 +285,31 @@ export default function FacultyManagementPage() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteFaculty = () => {
+  const handleDeleteFaculty = async () => {
     if (!facultyToDelete) return
 
-    const updatedFaculty = faculty.filter((f) => f.id !== facultyToDelete)
-    setFaculty(updatedFaculty)
-    localStorage.setItem("faculty", JSON.stringify(updatedFaculty))
-
+    // Find the faculty member to get their ID
     const facultyMember = faculty.find((f) => f.id === facultyToDelete)
-    if (facultyMember) {
-      const facultyLogins = JSON.parse(localStorage.getItem("facultyLogins") || "{}")
-      delete facultyLogins[facultyMember.username]
-      localStorage.setItem("facultyLogins", JSON.stringify(facultyLogins))
-    }
 
-    toast({
-      title: "Faculty Deleted",
-      description: "Faculty member has been removed",
-    })
+    try {
+      if (facultyMember) {
+        await apiClient.deleteUser(facultyMember.id)
+      }
+      fetchFaculty() // Refresh list
+    } catch (error: any) {
+      console.error("Error deleting faculty:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete faculty from system",
+        variant: "destructive"
+      })
+    }
 
     setDeleteDialogOpen(false)
     setFacultyToDelete(null)
   }
 
-  const handleSendNotification = () => {
+  const handleSendNotification = async () => {
     if (!selectedFacultyForNotification || !notificationData.title || !notificationData.message) {
       toast({
         title: "Error",
@@ -333,33 +319,33 @@ export default function FacultyManagementPage() {
       return
     }
 
-    const notification: FacultyNotification = {
-      id: Date.now().toString(),
-      facultyId: selectedFacultyForNotification.id,
-      title: notificationData.title,
-      message: notificationData.message,
-      sentBy: user.id,
-      sentByName: user.name,
-      sentAt: new Date().toISOString(),
-      read: false,
-      type: 'individual',
+    try {
+      await apiClient.sendNotification({
+        title: notificationData.title,
+        message: notificationData.message,
+        type: "ANNOUNCEMENT",
+        targetAudience: `user:${selectedFacultyForNotification.id}`
+      })
+
+      toast({
+        title: "Notification Sent",
+        description: `Notification sent to ${selectedFacultyForNotification.name}`,
+      })
+
+      setNotificationData({ title: "", message: "" })
+      setNotificationDialogOpen(false)
+      setSelectedFacultyForNotification(null)
+    } catch (error) {
+      console.error("Failed to send notification", error)
+      toast({
+        title: "Error",
+        description: "Failed to send notification via database",
+        variant: "destructive"
+      })
     }
-
-    const notifications = JSON.parse(localStorage.getItem("facultyNotifications") || "[]")
-    notifications.push(notification)
-    localStorage.setItem("facultyNotifications", JSON.stringify(notifications))
-
-    toast({
-      title: "Notification Sent",
-      description: `Notification sent to ${selectedFacultyForNotification.name}`,
-    })
-
-    setNotificationData({ title: "", message: "" })
-    setNotificationDialogOpen(false)
-    setSelectedFacultyForNotification(null)
   }
 
-  const handleBroadcast = () => {
+  const handleBroadcast = async () => {
     if (!notificationData.title || !notificationData.message) {
       toast({
         title: "Error",
@@ -369,29 +355,29 @@ export default function FacultyManagementPage() {
       return
     }
 
-    const notification: FacultyNotification = {
-      id: Date.now().toString(),
-      facultyId: 'all',
-      title: notificationData.title,
-      message: notificationData.message,
-      sentBy: user.id,
-      sentByName: user.name,
-      sentAt: new Date().toISOString(),
-      read: false,
-      type: 'broadcast',
+    try {
+      await apiClient.sendNotification({
+        title: notificationData.title,
+        message: notificationData.message,
+        type: "ANNOUNCEMENT",
+        targetAudience: "faculty"
+      })
+
+      toast({
+        title: "Broadcast Sent",
+        description: `Announcement sent to all ${faculty.length} faculty members`,
+      })
+
+      setNotificationData({ title: "", message: "" })
+      setBroadcastDialogOpen(false)
+    } catch (error) {
+      console.error("Failed to broadcast", error)
+      toast({
+        title: "Error",
+        description: "Failed to broadcast notification via database",
+        variant: "destructive"
+      })
     }
-
-    const notifications = JSON.parse(localStorage.getItem("facultyNotifications") || "[]")
-    notifications.push(notification)
-    localStorage.setItem("facultyNotifications", JSON.stringify(notifications))
-
-    toast({
-      title: "Broadcast Sent",
-      description: `Announcement sent to all ${faculty.length} faculty members`,
-    })
-
-    setNotificationData({ title: "", message: "" })
-    setBroadcastDialogOpen(false)
   }
 
   const handleDownloadTemplate = () => {
@@ -503,13 +489,13 @@ export default function FacultyManagementPage() {
       projectsSupervised: 0,
     }))
 
-    const updatedFaculty = [...faculty, ...newFaculty]
-    setFaculty(updatedFaculty)
-    localStorage.setItem("faculty", JSON.stringify(updatedFaculty))
-
-    // Add to staff users
+    // Add to DB
     newFaculty.forEach((f, index) => {
-      addStaffUser(f, parsedFaculty[index].Password)
+      addStaffUser({
+        ...f,
+        password: parsedFaculty[index].Password,
+        role: "FACULTY"
+      })
     })
 
     toast({
@@ -550,7 +536,9 @@ export default function FacultyManagementPage() {
   }
 
   const getWorkloadBadge = (faculty: Faculty) => {
-    const workload = faculty.subjects.length + faculty.assignedYears.length
+    const subjectsCount = faculty.subjects?.length || 0
+    const yearsCount = faculty.assignedYears?.length || 0
+    const workload = subjectsCount + yearsCount
     if (workload <= 3) return { label: "Light", color: "bg-green-500/10 text-green-700" }
     if (workload <= 6) return { label: "Moderate", color: "bg-blue-500/10 text-blue-700" }
     return { label: "Heavy", color: "bg-orange-500/10 text-orange-700" }
@@ -822,38 +810,7 @@ export default function FacultyManagementPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="space-y-2">
-                      <Label htmlFor="classesCount">Classes Conducted</Label>
-                      <Input
-                        id="classesCount"
-                        type="number"
-                        value={formData.classesCount}
-                        onChange={(e) => setFormData({ ...formData, classesCount: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="feedbackScore">Feedback Score (1-5)</Label>
-                      <Input
-                        id="feedbackScore"
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        value={formData.feedbackScore}
-                        onChange={(e) => setFormData({ ...formData, feedbackScore: parseFloat(e.target.value) || 0 })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="projectsSupervised">Projects Supervised</Label>
-                      <Input
-                        id="projectsSupervised"
-                        type="number"
-                        value={formData.projectsSupervised}
-                        onChange={(e) => setFormData({ ...formData, projectsSupervised: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                  </div>
+
 
                   <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={() => {
@@ -994,22 +951,7 @@ export default function FacultyManagementPage() {
                         </div>
                       </div>
 
-                      {(member.classesCount || member.feedbackScore || member.projectsSupervised) && (
-                        <div className="grid grid-cols-3 gap-4 p-3 bg-muted/50 rounded-lg text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Classes</p>
-                            <p className="font-semibold">{member.classesCount || 0}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Rating</p>
-                            <p className="font-semibold">{member.feedbackScore ? `${member.feedbackScore}/5` : "N/A"}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Projects</p>
-                            <p className="font-semibold">{member.projectsSupervised || 0}</p>
-                          </div>
-                        </div>
-                      )}
+
 
                       <div className="p-2 bg-muted rounded text-xs">
                         <p className="font-medium">Login Credentials:</p>

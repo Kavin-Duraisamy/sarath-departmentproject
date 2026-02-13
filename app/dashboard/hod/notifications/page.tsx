@@ -1,9 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { apiClient } from "@/lib/api"
+import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default function HODNotificationsPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -25,50 +28,54 @@ export default function HODNotificationsPage() {
     targetAudience: "all",
   })
   const [notifications, setNotifications] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
+    if (status === "loading") return
+    if (status === "unauthenticated") {
       router.push("/")
       return
     }
 
-    const userData = JSON.parse(storedUser)
-    if (userData.role !== "hod") {
-      router.push(`/dashboard/${userData.role}`)
+    const userData = session?.user
+    if (!userData || userData.role !== "hod") {
+      router.push("/")
       return
     }
 
     setUser(userData)
+    fetchSentNotifications()
+  }, [router, session, status])
 
-    // Load notifications
-    const storedNotifications = localStorage.getItem("notifications")
-    if (storedNotifications) {
-      setNotifications(JSON.parse(storedNotifications))
+  const fetchSentNotifications = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.getSentNotifications()
+      setNotifications(response.data)
+    } catch (error) {
+      console.error("Failed to fetch sent notifications", error)
+    } finally {
+      setLoading(false)
     }
-  }, [router])
+  }
 
-  const handleSendNotification = (e: React.FormEvent) => {
+  const handleSendNotification = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const newNotification = {
-      id: Date.now().toString(),
-      ...formData,
-      date: new Date().toISOString().split("T")[0],
-      sender: user.name,
+    try {
+      await apiClient.sendNotification(formData)
+
+      setFormData({
+        title: "",
+        message: "",
+        type: "announcement",
+        targetAudience: "all",
+      })
+      setIsDialogOpen(false)
+      fetchSentNotifications()
+    } catch (error) {
+      console.error("Failed to send notification", error)
     }
-
-    const updated = [newNotification, ...notifications]
-    setNotifications(updated)
-    localStorage.setItem("notifications", JSON.stringify(updated))
-
-    setFormData({
-      title: "",
-      message: "",
-      type: "announcement",
-      targetAudience: "all",
-    })
-    setIsDialogOpen(false)
   }
 
   if (!user) {
@@ -179,7 +186,11 @@ export default function HODNotificationsPage() {
           </Dialog>
         </div>
 
-        {notifications.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center p-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : notifications.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
               <p className="text-muted-foreground">No notifications sent yet</p>
@@ -197,12 +208,14 @@ export default function HODNotificationsPage() {
                       <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
                       <div className="flex items-center gap-2 mt-3">
                         <Badge variant="outline" className="capitalize">
-                          {notification.type}
+                          {notification.type.toLowerCase()}
                         </Badge>
                         <Badge variant="secondary" className="capitalize">
                           {notification.targetAudience}
                         </Badge>
-                        <span className="text-xs text-muted-foreground">{notification.date}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(notification.createdAt), "PPP p")}
+                        </span>
                       </div>
                     </div>
                   </div>

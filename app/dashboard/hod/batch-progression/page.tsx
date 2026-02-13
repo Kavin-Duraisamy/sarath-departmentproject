@@ -6,27 +6,33 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ArrowLeft, RefreshCw, AlertCircle, Undo2, FastForward, Eye } from "lucide-react"
+import { ArrowLeft, RefreshCw, AlertCircle, Undo2, FastForward, Eye, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { apiClient } from "@/lib/api"
+import { toast } from "sonner"
 
 export default function BatchProgressionPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
   const [batchStats, setBatchStats] = useState({
-    yearI: 0,
-    yearII: 0,
-    yearIII: 0,
+    toBePromotedToII: 0,
+    toBePromotedToIII: 0,
+    toBeGraduated: 0,
   })
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [progressionPreview, setProgressionPreview] = useState<any>(null)
+
   const [archivedStudents, setArchivedStudents] = useState<any[]>([])
   const [progressionHistory, setProgressionHistory] = useState<any[]>([])
+
   const [isUndoDialogOpen, setIsUndoDialogOpen] = useState(false)
-  const [isReprogressDialogOpen, setIsReprogressDialogOpen] = useState(false)
-  const [selectedHistory, setSelectedHistory] = useState<any>(null)
+  const [progressionDescription, setProgressionDescription] = useState("")
 
   useEffect(() => {
     if (status === "loading") return
@@ -38,7 +44,7 @@ export default function BatchProgressionPage() {
     const userData = session?.user
     if (!userData || userData.role !== "hod") {
       if (userData) {
-        router.push(`/dashboard/${userData.role}`)
+        // router.push(`/dashboard/${userData.role}`) // Optional: redirect to their dashboard
       } else {
         router.push("/")
       }
@@ -46,34 +52,33 @@ export default function BatchProgressionPage() {
     }
 
     setUser(userData)
-    loadBatchStats()
-    loadArchivedStudents()
-    loadProgressionHistory()
+    loadData(userData.department)
   }, [session, status, router])
 
-  const loadBatchStats = () => {
-    const students = JSON.parse(localStorage.getItem("students") || "[]")
-    setBatchStats({
-      yearI: students.filter((s: any) => s.year === "I").length,
-      yearII: students.filter((s: any) => s.year === "II").length,
-      yearIII: students.filter((s: any) => s.year === "III").length,
-    })
-  }
+  const loadData = async (department?: string) => {
+    setLoading(true)
+    try {
+      const [statsRes, historyRes, alumniRes] = await Promise.all([
+        apiClient.previewProgression(department),
+        apiClient.getProgressionHistory(),
+        apiClient.getStudents({ type: 'alumni' }) // We might need to filter by department in backend if not already done by controller for HOD
+      ])
 
-  const loadArchivedStudents = () => {
-    const archived = JSON.parse(localStorage.getItem("archived_students") || "[]")
-    setArchivedStudents(archived)
-  }
-
-  const loadProgressionHistory = () => {
-    const history = JSON.parse(localStorage.getItem("progression_history") || "[]")
-    setProgressionHistory(history)
+      setBatchStats(statsRes.data)
+      setProgressionHistory(historyRes.data)
+      setArchivedStudents(alumniRes.data)
+    } catch (error) {
+      console.error("Failed to load data", error)
+      toast.error("Failed to load batch data")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getArchivedBatchesByYear = () => {
     const grouped: { [year: number]: any[] } = {}
     archivedStudents.forEach((student: any) => {
-      const year = student.passedOutYear || new Date(student.archivedDate).getFullYear()
+      const year = student.passedOutYear || new Date(student.updatedAt).getFullYear() // Fallback
       if (!grouped[year]) {
         grouped[year] = []
       }
@@ -89,192 +94,57 @@ export default function BatchProgressionPage() {
   }
 
   const handlePreviewProgression = () => {
-    const students = JSON.parse(localStorage.getItem("students") || "[]")
-
-    const yearIStudents = students.filter((s: any) => s.year === "I")
-    const yearIIStudents = students.filter((s: any) => s.year === "II")
-    const yearIIIStudents = students.filter((s: any) => s.year === "III")
-
+    // We already have stats from loadData, but let's refresh just in case
     setProgressionPreview({
-      toBePassedOut: yearIIIStudents.length,
-      iToII: yearIStudents.length,
-      iiToIII: yearIIStudents.length,
-      newFirstYear: 0,
+      toBePassedOut: batchStats.toBeGraduated,
+      iToII: batchStats.toBePromotedToII,
+      iiToIII: batchStats.toBePromotedToIII,
     })
-
     setIsDialogOpen(true)
   }
 
-  const handleConfirmProgression = () => {
-    const students = JSON.parse(localStorage.getItem("students") || "[]")
-    const passedOutYear = new Date().getFullYear() + 1
+  const handleConfirmProgression = async () => {
+    try {
+      const nextYear = new Date().getFullYear() + 1;
+      const currentYear = new Date().getFullYear();
+      const academicYear = `${currentYear}-${nextYear}`;
 
-    const progressionSnapshot = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      beforeProgression: JSON.parse(JSON.stringify(students)),
-      stats: {
-        yearI: students.filter((s: any) => s.year === "I").length,
-        yearII: students.filter((s: any) => s.year === "II").length,
-        yearIII: students.filter((s: any) => s.year === "III").length,
-      },
-      passedOutYear,
+      await apiClient.promoteBatch({
+        department: user.department,
+        academicYear,
+        description: progressionDescription || `Regular batch promotion for ${academicYear}`
+      });
+
+      toast.success("Batch progression completed successfully!");
+      setIsDialogOpen(false);
+      loadData(user.department);
+    } catch (error) {
+      console.error("Progression failed", error);
+      toast.error("Failed to progress batch");
     }
-
-    const updatedStudents = students
-      .map((student: any) => {
-        if (student.year === "I") {
-          return { ...student, year: "II" }
-        } else if (student.year === "II") {
-          return { ...student, year: "III" }
-        } else if (student.year === "III") {
-          return null
-        }
-        return student
-      })
-      .filter(Boolean)
-
-    updatedStudents.forEach((student: any) => {
-      if (student.year === "III") {
-        const projectsData = JSON.parse(localStorage.getItem(`student_projects_${student.id}`) || "{}")
-        if (projectsData.final) {
-          projectsData.final = { title: "", description: "", technologies: "", guide: "" }
-          localStorage.setItem(`student_projects_${student.id}`, JSON.stringify(projectsData))
-        }
-      }
-    })
-
-    localStorage.setItem("students", JSON.stringify(updatedStudents))
-
-    const passedOutStudents = students.filter((s: any) => s.year === "III")
-    const archived = JSON.parse(localStorage.getItem("archived_students") || "[]")
-    const archivedWithMetadata = passedOutStudents.map((s: any) => ({
-      ...s,
-      archivedDate: new Date().toISOString(),
-      progressionId: progressionSnapshot.id,
-      passedOutYear,
-    }))
-    localStorage.setItem("archived_students", JSON.stringify([...archived, ...archivedWithMetadata]))
-
-    const history = JSON.parse(localStorage.getItem("progression_history") || "[]")
-    localStorage.setItem("progression_history", JSON.stringify([progressionSnapshot, ...history]))
-
-    setIsDialogOpen(false)
-    loadBatchStats()
-    loadArchivedStudents()
-    loadProgressionHistory()
-
-    alert("Batch progression completed successfully!")
   }
 
-  const handleRollbackProgression = (progressionId: number) => {
-    const history = progressionHistory.find((p: any) => p.id === progressionId)
-    if (!history) {
-      alert("Progression not found")
-      return
+  const handleRollbackProgression = async (progressionId: string) => {
+    try {
+      await apiClient.rollbackProgression(progressionId);
+      toast.success("Progression rolled back successfully!");
+      loadData(user.department);
+    } catch (error) {
+      console.error("Rollback failed", error);
+      toast.error("Failed to rollback progression");
     }
-
-    localStorage.setItem("students", JSON.stringify(history.beforeProgression))
-
-    const archived = JSON.parse(localStorage.getItem("archived_students") || "[]")
-    const filteredArchived = archived.filter((s: any) => s.progressionId !== progressionId)
-    localStorage.setItem("archived_students", JSON.stringify(filteredArchived))
-
-    const updatedHistory = progressionHistory.filter((p: any) => p.id !== progressionId)
-    localStorage.setItem("progression_history", JSON.stringify(updatedHistory))
-
-    loadBatchStats()
-    loadArchivedStudents()
-    loadProgressionHistory()
-
-    alert("Progression has been rolled back successfully!")
-  }
-
-  const handleUndoProgression = () => {
-    if (progressionHistory.length === 0) {
-      alert("No progression history to undo")
-      return
-    }
-
-    const lastProgression = progressionHistory[0]
-    handleRollbackProgression(lastProgression.id)
-    setIsUndoDialogOpen(false)
-  }
-
-  const handleReprogressBatch = (progression: any) => {
-    setSelectedHistory(progression)
-    setIsReprogressDialogOpen(true)
-  }
-
-  const handleConfirmReprogress = () => {
-    if (!selectedHistory) return
-
-    const students = JSON.parse(JSON.stringify(selectedHistory.beforeProgression))
-    const passedOutYear = new Date().getFullYear() + 1
-
-    const progressionSnapshot = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      beforeProgression: students,
-      stats: {
-        yearI: students.filter((s: any) => s.year === "I").length,
-        yearII: students.filter((s: any) => s.year === "II").length,
-        yearIII: students.filter((s: any) => s.year === "III").length,
-      },
-      reprocessedFrom: selectedHistory.id,
-      passedOutYear,
-    }
-
-    const updatedStudents = students
-      .map((student: any) => {
-        if (student.year === "I") {
-          return { ...student, year: "II" }
-        } else if (student.year === "II") {
-          return { ...student, year: "III" }
-        } else if (student.year === "III") {
-          return null
-        }
-        return student
-      })
-      .filter(Boolean)
-
-    updatedStudents.forEach((student: any) => {
-      if (student.year === "III") {
-        const projectsData = JSON.parse(localStorage.getItem(`student_projects_${student.id}`) || "{}")
-        if (projectsData.final) {
-          projectsData.final = { title: "", description: "", technologies: "", guide: "" }
-          localStorage.setItem(`student_projects_${student.id}`, JSON.stringify(projectsData))
-        }
-      }
-    })
-
-    localStorage.setItem("students", JSON.stringify(updatedStudents))
-
-    const passedOutStudents = students.filter((s: any) => s.year === "III")
-    const archived = JSON.parse(localStorage.getItem("archived_students") || "[]")
-    const archivedWithMetadata = passedOutStudents.map((s: any) => ({
-      ...s,
-      archivedDate: new Date().toISOString(),
-      progressionId: progressionSnapshot.id,
-      reprocessed: true,
-      passedOutYear,
-    }))
-    localStorage.setItem("archived_students", JSON.stringify([...archived, ...archivedWithMetadata]))
-
-    const history = JSON.parse(localStorage.getItem("progression_history") || "[]")
-    localStorage.setItem("progression_history", JSON.stringify([progressionSnapshot, ...history]))
-
-    setIsReprogressDialogOpen(false)
-    setSelectedHistory(null)
-    loadBatchStats()
-    loadArchivedStudents()
-    loadProgressionHistory()
-
-    alert("Batch reprogressed successfully!")
   }
 
   if (!user) {
     return null
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
   }
 
   return (
@@ -307,8 +177,8 @@ export default function BatchProgressionPage() {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                This action will progress all students to the next year, mark Year III students as passed out, and clear
-                final year project fields for new final year students.
+                This action will progress all students to the next year, mark Year III students as passed out.
+                Existing final year students will be moved to Alumni.
               </AlertDescription>
             </Alert>
 
@@ -318,7 +188,7 @@ export default function BatchProgressionPage() {
                   <CardTitle className="text-lg">First Year (I)</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{batchStats.yearI}</div>
+                  <div className="text-3xl font-bold mb-2">{batchStats.toBePromotedToII}</div>
                   <p className="text-sm text-muted-foreground">Students will progress to Year II</p>
                 </CardContent>
               </Card>
@@ -328,7 +198,7 @@ export default function BatchProgressionPage() {
                   <CardTitle className="text-lg">Second Year (II)</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{batchStats.yearII}</div>
+                  <div className="text-3xl font-bold mb-2">{batchStats.toBePromotedToIII}</div>
                   <p className="text-sm text-muted-foreground">Students will progress to Year III</p>
                 </CardContent>
               </Card>
@@ -338,7 +208,7 @@ export default function BatchProgressionPage() {
                   <CardTitle className="text-lg">Third Year (III)</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">{batchStats.yearIII}</div>
+                  <div className="text-3xl font-bold mb-2">{batchStats.toBeGraduated}</div>
                   <p className="text-sm text-muted-foreground">Students will be marked as passed out</p>
                 </CardContent>
               </Card>
@@ -354,12 +224,17 @@ export default function BatchProgressionPage() {
                     Click the button below to preview the batch progression changes before confirming.
                   </p>
                   <div className="flex gap-4">
-                    <Button onClick={handlePreviewProgression}>
+                    <Button onClick={handlePreviewProgression} disabled={batchStats.toBePromotedToII === 0 && batchStats.toBePromotedToIII === 0 && batchStats.toBeGraduated === 0}>
                       <RefreshCw className="h-4 w-4 mr-2" />
-                      Preview Batch Progression
+                      Preview & Execute Progression
                     </Button>
+
                     {progressionHistory.length > 0 && (
-                      <Button variant="outline" onClick={() => setIsUndoDialogOpen(true)}>
+                      <Button variant="outline" onClick={() => {
+                        if (confirm("Are you sure you want to rollback the last progression?")) {
+                          handleRollbackProgression(progressionHistory[0].id)
+                        }
+                      }}>
                         <Undo2 className="h-4 w-4 mr-2" />
                         Undo Last Progression
                       </Button>
@@ -393,28 +268,7 @@ export default function BatchProgressionPage() {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pt-4 pb-4">
-                      <div className="flex justify-end mb-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent accordion toggle when clicking button
-                            const progression = progressionHistory.find((p: any) => p.passedOutYear === batch.year)
-                            if (progression) {
-                              if (
-                                confirm(
-                                  `Are you sure you want to rollback the ${batch.year} batch progression? This will restore all students.`,
-                                )
-                              ) {
-                                handleRollbackProgression(progression.id)
-                              }
-                            }
-                          }}
-                        >
-                          <Undo2 className="h-4 w-4 mr-2" />
-                          Rollback Batch
-                        </Button>
-                      </div>
+
                       <div className="rounded-md border">
                         <table className="w-full">
                           <thead className="bg-muted/50">
@@ -422,8 +276,7 @@ export default function BatchProgressionPage() {
                               <th className="text-left py-3 px-4 font-medium text-sm">Name</th>
                               <th className="text-left py-3 px-4 font-medium text-sm">Roll Number</th>
                               <th className="text-left py-3 px-4 font-medium text-sm">Department</th>
-                              <th className="text-left py-3 px-4 font-medium text-sm">Archived Date</th>
-                              <th className="text-right py-3 px-4 font-medium text-sm">Actions</th>
+                              <th className="text-left py-3 px-4 font-medium text-sm">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -432,9 +285,6 @@ export default function BatchProgressionPage() {
                                 <td className="py-3 px-4 text-sm">{student.name}</td>
                                 <td className="py-3 px-4 text-sm">{student.rollNumber}</td>
                                 <td className="py-3 px-4 text-sm">{student.department}</td>
-                                <td className="py-3 px-4 text-sm">
-                                  {student.archivedDate ? new Date(student.archivedDate).toLocaleDateString() : "N/A"}
-                                </td>
                                 <td className="py-3 px-4 text-sm text-right">
                                   <Button
                                     variant="ghost"
@@ -474,32 +324,25 @@ export default function BatchProgressionPage() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <p className="font-medium">
-                                  {progression.passedOutYear && `${progression.passedOutYear} Batch - `}
-                                  Progression on {new Date(progression.date).toLocaleDateString()} at{" "}
-                                  {new Date(progression.date).toLocaleTimeString()}
+                                  {progression.academicYear} Batch Progression
                                 </p>
-                                {progression.reprocessedFrom && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                                    Reprocessed
-                                  </span>
-                                )}
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(progression.createdAt).toLocaleDateString()}
+                                </span>
                               </div>
                               <div className="space-y-1 text-sm text-muted-foreground">
-                                <p>Year I: {progression.stats.yearI} students → Year II</p>
-                                <p>Year II: {progression.stats.yearII} students → Year III</p>
-                                <p>Year III: {progression.stats.yearIII} students → Passed Out</p>
+                                <p>Promoted: {progression.promotedCount} students</p>
+                                <p>Graduated: {progression.graduatedCount} students</p>
+                                {progression.description && (
+                                  <p className="italic">"{progression.description}"</p>
+                                )}
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleReprogressBatch(progression)}
-                                title="Reprogress this batch"
-                              >
-                                <FastForward className="h-4 w-4 mr-2" />
-                                Reprogress
-                              </Button>
+                              {/* Only allow rollback of the MOST RECENT progression? 
+                                  For now, we just show button, backend handles safety or not.
+                                  Ideally we sort by date and only show on top one.
+                              */}
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -567,51 +410,6 @@ export default function BatchProgressionPage() {
           </DialogContent>
         </Dialog>
 
-        <Dialog open={isUndoDialogOpen} onOpenChange={setIsUndoDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Undo Batch Progression</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  This will restore all students to their previous year and restore archived students. This action
-                  cannot be undone.
-                </AlertDescription>
-              </Alert>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUndoDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleUndoProgression}>Confirm Undo</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={isReprogressDialogOpen} onOpenChange={setIsReprogressDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Reprogress Batch</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  This will restore students to their state at the time of this progression and progress them again.
-                  This creates a new progression entry.
-                </AlertDescription>
-              </Alert>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsReprogressDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleConfirmReprogress}>Confirm Reprogress</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   )

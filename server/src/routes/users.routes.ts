@@ -8,7 +8,7 @@ const router = Router();
 router.use(authenticate);
 
 // Get all users (ADMIN, HOD)
-router.get('/', authorize('ADMIN', 'HOD'), getUsers);
+router.get('/', authorize('ADMIN', 'HOD', 'FACULTY', 'STUDENT'), getUsers);
 
 // Get single user
 router.get('/:id', getUser);
@@ -16,10 +16,10 @@ router.get('/:id', getUser);
 // Create user (ADMIN, HOD)
 router.post('/', authorize('ADMIN', 'HOD'), createUser);
 
-// Update user (ADMIN)
-router.put('/:id', authorize('ADMIN'), updateUser);
+// Update user (ADMIN, HOD)
+router.put('/:id', authorize('ADMIN', 'HOD'), updateUser);
 
-// Delete user (ADMIN)
-router.delete('/:id', authorize('ADMIN'), deleteUser);
+// Delete user (ADMIN, HOD)
+router.delete('/:id', authorize('ADMIN', 'HOD'), deleteUser);
 
 export default router;

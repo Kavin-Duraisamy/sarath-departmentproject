@@ -2,66 +2,59 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { apiClient } from "@/lib/api"
+import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export default function StudentNotificationsPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
+  const [notifications, setNotifications] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
+    if (status === "loading") return
+    if (status === "unauthenticated") {
       router.push("/")
       return
     }
 
-    const userData = JSON.parse(storedUser)
-    if (userData.role !== "student") {
-      router.push(`/dashboard/${userData.role}`)
+    const userData = session?.user
+    if (!userData || userData.role !== "student") {
+      router.push("/")
       return
     }
 
     setUser(userData)
-  }, [router])
+    fetchNotifications()
+  }, [router, session, status])
 
-  // Mock notifications
-  const notifications = [
-    {
-      id: "1",
-      type: "placement",
-      title: "New Placement Drive",
-      message: "Amazon is conducting campus placements. Register by 20th January.",
-      date: "2024-01-15",
-      read: false,
-    },
-    {
-      id: "2",
-      type: "academic",
-      title: "Semester Exams Schedule",
-      message: "End semester exams will begin from 1st February. Check the detailed schedule.",
-      date: "2024-01-14",
-      read: false,
-    },
-    {
-      id: "3",
-      type: "project",
-      title: "Project Submission Reminder",
-      message: "Final year project abstract submission deadline is 25th January.",
-      date: "2024-01-13",
-      read: true,
-    },
-    {
-      id: "4",
-      type: "announcement",
-      title: "Technical Workshop",
-      message: "Workshop on Cloud Computing on 18th January in Seminar Hall.",
-      date: "2024-01-12",
-      read: true,
-    },
-  ]
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.getNotifications()
+      setNotifications(response.data)
+    } catch (error) {
+      console.error("Failed to fetch notifications", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleMarkAsRead = async (id: string, isRead: boolean) => {
+    if (isRead) return
+    try {
+      await apiClient.markNotificationAsRead(id)
+      fetchNotifications()
+    } catch (error) {
+      console.error("Failed to mark as read", error)
+    }
+  }
 
   if (!user) {
     return null
@@ -87,23 +80,41 @@ export default function StudentNotificationsPage() {
         </div>
 
         <div className="space-y-4">
-          {notifications.map((notification) => (
-            <Card key={notification.id} className={notification.read ? "opacity-60" : ""}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3 flex-1">
-                    <Bell className="h-5 w-5 mt-1 text-muted-foreground" />
-                    <div className="flex-1">
-                      <CardTitle className="text-base">{notification.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-                      <p className="text-xs text-muted-foreground mt-2">{notification.date}</p>
-                    </div>
-                  </div>
-                  {!notification.read && <Badge variant="default">New</Badge>}
-                </div>
-              </CardHeader>
+          {loading ? (
+            <div className="flex justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : notifications.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <p className="text-muted-foreground">No notifications found</p>
+              </CardContent>
             </Card>
-          ))}
+          ) : (
+            notifications.map((notification) => (
+              <Card
+                key={notification.id}
+                className={`${notification.isRead ? "opacity-60" : "cursor-pointer hover:border-primary/50 transition-colors"}`}
+                onClick={() => handleMarkAsRead(notification.id, notification.isRead)}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3 flex-1">
+                      <Bell className={`h-5 w-5 mt-1 ${notification.isRead ? "text-muted-foreground" : "text-primary fill-primary/10"}`} />
+                      <div className="flex-1">
+                        <CardTitle className="text-base">{notification.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {format(new Date(notification.createdAt), "PPP p")}
+                        </p>
+                      </div>
+                    </div>
+                    {!notification.isRead && <Badge variant="default">New</Badge>}
+                  </div>
+                </CardHeader>
+              </Card>
+            ))
+          )}
         </div>
       </main>
     </div>

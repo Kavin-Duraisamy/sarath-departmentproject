@@ -19,12 +19,21 @@ model User {
   name        String
   role        Role     @default(FACULTY)
   department  String?
+  phone       String?
+  designation String?
+  qualification String?
+  experience    String?
+  address       String?
+  emergencyContact String?
+  assignedYears String[] // Array of years assigned to faculty (e.g., ["I", "II"])
+  subjects      String[] // Array of subjects handled by faculty
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
   notifications Notification[]
   projects      Project[]      @relation("FacultyProjects")
+  timetables    Timetable[]    @relation("FacultyTimetables")
 
   @@index([username])
   @@index([email])
@@ -69,6 +78,10 @@ model Student {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  // Progression fields
+  isAlumni        Boolean  @default(false)
+  passedOutYear   Int?
+
   // Relations
   academicRecords AcademicRecord[]
   internships     Internship[]
@@ -81,7 +94,27 @@ model Student {
   @@index([rollNumber])
   @@index([department])
   @@index([year])
+  @@index([isAlumni])
   @@map("students")
+}
+
+// Batch Progression History
+model BatchProgression {
+  id              String   @id @default(cuid())
+  department      String
+  academicYear    String   // e.g. "2025-2026"
+  promotedDate    DateTime @default(now())
+  
+  promotedCount   Int      // I -> II, II -> III
+  graduatedCount  Int      // III -> Alumni
+  
+  description     String?
+  
+  processedBy     String?  // User ID of HOD
+  
+  createdAt       DateTime @default(now())
+
+  @@map("batch_progressions")
 }
 
 enum Year {
@@ -174,6 +207,9 @@ model Project {
   guideName   String?
   guideEmail  String?
   duration    String?
+  remarks     String?
+  approvedAt  DateTime?
+  approvedBy  String?
   
   // Can be student or faculty project
   studentId   String?
@@ -184,10 +220,28 @@ model Project {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  history     ProjectHistory[]
 
   @@index([studentId])
   @@index([facultyId])
   @@map("projects")
+}
+
+// Project Approval History
+model ProjectHistory {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  status      ProjectStatus
+  remarks     String?
+  actionBy    String      // Name of the faculty/student who took the action
+  
+  createdAt   DateTime @default(now())
+
+  @@index([projectId])
+  @@map("project_history")
 }
 
 // Departments
@@ -209,17 +263,18 @@ model Department {
 
 // Timetable Settings
 model TimetableSettings {
-  id            String     @id @default(cuid())
-  departmentId  String     @unique
-  department    Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  id                String     @id @default(cuid())
+  departmentId      String     @unique
+  department        Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   
-  startTime     String     // e.g., "09:00"
-  endTime       String     // e.g., "16:00"
-  slotDuration  Int        // in minutes
-  breakSlots    String     // JSON array of break times
+  startTime         String     // e.g., "08:30"
+  periodDuration    Int        // in minutes
+  periodsPerDay     Int        // e.g., 5
+  breakAfterPeriod  Int        // e.g., 2
+  breakDuration     Int        // in minutes
   
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   @@map("timetable_settings")
 }
@@ -232,9 +287,11 @@ model Timetable {
   
   year          Year
   day           String     // Monday, Tuesday, etc.
-  timeSlot      String     // e.g., "09:00-10:00"
+  periodIndex   Int        // 0, 1, 2...
   subject       String
-  facultyName   String
+  facultyId     String?
+  faculty       User?      @relation("FacultyTimetables", fields: [facultyId], references: [id])
+  facultyName   String?    // For manual entry
   roomNumber    String?
   
   createdAt     DateTime   @default(now())
@@ -242,6 +299,7 @@ model Timetable {
 
   @@index([departmentId])
   @@index([year])
+  @@index([facultyId])
   @@map("timetables")
 }
 
@@ -315,11 +373,15 @@ model Notification {
   studentId String?
   student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   
+  senderId  String?
+  targetAudience String?
+  
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([studentId])
+  @@index([senderId])
   @@index([isRead])
   @@map("notifications")
 }
@@ -329,6 +391,10 @@ enum NotificationType {
   WARNING
   SUCCESS
   ERROR
+  PLACEMENT
+  ACADEMIC
+  EVENT
+  ANNOUNCEMENT
 }
 
 enum ProjectType {
@@ -341,4 +407,20 @@ enum ProjectStatus {
   pending
   approved
   rejected
+}
+
+// Global System Settings
+model SystemSettings {
+  id                    String   @id @default("global")
+  instituteName         String   @default("Department of Computer Science")
+  academicYear          String   @default("2024-2025")
+  semester              String   @default("Odd")
+  minCGPA               Float    @default(6.0)
+  enableNotifications   Boolean  @default(true)
+  enableProjectSimilarity Boolean @default(true)
+  similarityThreshold   Int      @default(60)
+  
+  updatedAt             DateTime @updatedAt
+
+  @@map("system_settings")
 }

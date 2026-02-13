@@ -30,7 +30,6 @@ api.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest: any = error.config;
 
-        // If error is 401 and we haven't retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
@@ -38,13 +37,11 @@ api.interceptors.response.use(
                 const refreshToken = localStorage.getItem('refreshToken');
 
                 if (!refreshToken) {
-                    // No refresh token, redirect to login
                     localStorage.clear();
                     window.location.href = '/';
                     return Promise.reject(error);
                 }
 
-                // Try to refresh the token
                 const response = await axios.post(`${API_URL}/auth/refresh`, {
                     refreshToken,
                 });
@@ -52,11 +49,9 @@ api.interceptors.response.use(
                 const { accessToken } = response.data;
                 localStorage.setItem('accessToken', accessToken);
 
-                // Retry original request with new token
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // Refresh failed, clear storage and redirect
                 localStorage.clear();
                 window.location.href = '/';
                 return Promise.reject(refreshError);
@@ -81,12 +76,27 @@ export const apiClient = {
     getCurrentUser: () =>
         api.get('/auth/me'),
 
+    getUsers: (params?: any) =>
+        api.get('/users', { params }),
+
+    createUser: (data: any) =>
+        api.post('/users', data),
+
+    updateUser: (id: string, data: any) =>
+        api.put(`/users/${id}`, data),
+
+    deleteUser: (id: string) =>
+        api.delete(`/users/${id}`),
+
     // Students
-    getStudents: (params?: { year?: string; search?: string }) =>
+    getStudents: (params?: { year?: string; search?: string; department?: string }) =>
         api.get('/students', { params }),
 
     getStudent: (id: string) =>
         api.get(`/students/${id}`),
+
+    getStudentProfile: () =>
+        api.get('/students/profile/me'),
 
     createStudent: (data: any) =>
         api.post('/students', data),
@@ -103,56 +113,45 @@ export const apiClient = {
     deleteStudent: (id: string) =>
         api.delete(`/students/${id}`),
 
-    bulkDeleteStudents: (ids?: string[]) =>
+    bulkDeleteStudents: (ids: string[]) =>
         api.delete('/students/bulk-delete', { data: { ids } }),
 
-    // Users (Staff)
-    getUsers: () =>
-        api.get('/users'),
+    resetStudentPassword: (id: string) =>
+        api.post(`/students/${id}/reset-password`),
 
-    getUser: (id: string) =>
-        api.get(`/users/${id}`),
+    // Projects
+    getFacultyProjects: () => api.get('/students/projects/faculty'),
+    getAllProjects: () => api.get('/students/projects/all'),
+    updateProjectStatus: (studentId: string, projectId: string, data: any) =>
+        api.put(`/students/${studentId}/projects/${projectId}/status`, data),
 
-    createUser: (data: any) =>
-        api.post('/users', data),
+    // Placement
+    getCompanies: () => api.get('/placement/companies'),
+    createCompany: (data: any) => api.post('/placement/companies', data),
+    getApplications: () => api.get('/placement/applications'),
+    applyForCompany: (data: any) => api.post('/placement/applications', data),
+    updateApplicationStatus: (id: string, status: string) => api.put(`/placement/applications/${id}`, { status }),
+    getPlacementStats: () => api.get('/placement/stats'),
 
-    updateUser: (id: string, data: any) =>
-        api.put(`/users/${id}`, data),
+    // Notifications
+    getNotifications: () => api.get('/notifications'),
+    getSentNotifications: () => api.get('/notifications/sent'),
+    markNotificationAsRead: (id: string) => api.put(`/notifications/${id}/read`),
+    sendNotification: (data: any) => api.post('/notifications/bulk', data),
 
-    deleteUser: (id: string) =>
-        api.delete(`/users/${id}`),
+    // Timetable
+    getTimetableSettings: () => api.get('/timetable/settings'),
+    updateTimetableSettings: (data: any) => api.post('/timetable/settings', data),
+    getTimetableEntries: (params?: any) => api.get('/timetable/entries', { params }),
+    updateTimetableEntries: (data: any) => api.post('/timetable/entries', data),
 
-    // File Uploads
-    uploadResume: (file: File) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        return api.post('/upload/resume', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-    },
+    // Departments
+    getDepartments: () => api.get('/departments'),
+    getSystemStats: () => api.get('/departments/stats'),
+    createDepartment: (data: any) => api.post('/departments', data),
+    deleteDepartment: (id: string) => api.delete(`/departments/${id}`),
 
-    uploadCertificate: (file: File) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        return api.post('/upload/certificate', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-    },
-
-    uploadProfilePhoto: (file: File) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        return api.post('/upload/profile-photo', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-    },
-
-    uploadDocument: (file: File, folder?: string) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        if (folder) formData.append('folder', folder);
-        return api.post('/upload/document', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-    },
+    // Settings
+    getSystemSettings: () => api.get('/settings'),
+    updateSystemSettings: (data: any) => api.post('/settings', data),
 };

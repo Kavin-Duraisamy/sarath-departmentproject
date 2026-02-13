@@ -1,0 +1,29 @@
+Departments in DB: [
+  "B.Sc Computer Science",
+  "AI & Data Science",
+  "Commerce",
+  "Mathematics"
+]
+Faculty Users: [
+  {
+    "id": "cmlj5bzh6000411y5pjfhztwo",
+    "username": "vp",
+    "name": "VP Faculty",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science"
+  },
+  {
+    "id": "cmlkicvqh0000jad09xfkru2u",
+    "username": "srinath",
+    "name": "SRINATH",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science with Cognitive Systems"
+  },
+  {
+    "id": "cmlkidrcz0001jad02mh3w92e",
+    "username": "senthil",
+    "name": "SENTHIL",
+    "role": "FACULTY",
+    "department": "B.Sc Computer Science with Cognitive Systems"
+  }
+]

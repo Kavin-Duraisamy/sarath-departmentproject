@@ -250,17 +250,15 @@ export default function StudentDetailsPage({ params }: { params: Promise<{ id: s
         }
     }
 
-    const handleResetPassword = () => {
+    const handleResetPassword = async () => {
         if (!student) return
-        const studentLogins = JSON.parse(localStorage.getItem("studentLogins") || "{}")
-        studentLogins[student.rollNumber] = {
-            password: student.dob,
-            role: "student",
-            name: student.name,
-            studentId: student.id,
+        try {
+            await apiClient.resetStudentPassword(student.id)
+            alert(`Password reset successful to DOB: ${student.dob}`)
+        } catch (error) {
+            console.error("Failed to reset password", error)
+            alert("Failed to reset password in database")
         }
-        localStorage.setItem("studentLogins", JSON.stringify(studentLogins))
-        alert(`Password reset to DOB: ${student.dob}`)
     }
 
     if (!student) {

@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, TokenPayload } from '../utils/jwt';
 import fs from 'fs';
-import path from 'path';
 
 const debugLog = (msg: string) => {
-    // Using absolute path to be sure
-    const logPath = 'e:/department-portal-2/server/debug.log';
+    // Using relative path
+    const logPath = './debug.log'; // Avoiding path.join for now to see if it fixes the lint error if path was actually unused elsewhere.
     const timestamp = new Date().toISOString();
     try {
         fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);

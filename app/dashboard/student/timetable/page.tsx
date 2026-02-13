@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { apiClient } from "@/lib/api"
 
 export default function StudentTimetablePage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function StudentTimetablePage() {
     breakDuration: 25,
   })
   const [timetableData, setTimetableData] = useState<any>({})
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === "loading") return
@@ -31,40 +33,52 @@ export default function StudentTimetablePage() {
 
     const userData = session?.user
     if (!userData || userData.role !== "student") {
-      if (userData?.role) {
-        router.push(`/dashboard/${userData.role}`)
-      } else {
-        router.push("/")
-      }
+      router.push(userData?.role ? `/dashboard/${userData.role}` : "/")
       return
     }
 
     setUser(userData)
-
-    const students = JSON.parse(localStorage.getItem("students") || "[]")
-    // In NextAuth, we mapped student roll number or ID to session.user.id
-    const student = students.find((s: any) => s.id === userData.id || s.rollNumber === userData.id)
-    if (student) {
-      setStudentData(student)
-    }
-
-    // Load Timetable Settings and Data
-    const storedSettings = localStorage.getItem("timetable_settings")
-    if (storedSettings) {
-      setTimetableSettings(JSON.parse(storedSettings))
-    }
-
-    const storedData = localStorage.getItem("timetable_data")
-    if (storedData) {
-      setTimetableData(JSON.parse(storedData))
-    }
+    fetchData()
   }, [session, status, router])
 
-  if (!user || !studentData) {
-    return null
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+
+      // Fetch student profile for year and department info
+      const profile = await apiClient.getStudentProfile()
+      setStudentData(profile.data)
+
+      // Fetch Timetable Settings 
+      const settingsRes = await apiClient.getTimetableSettings()
+      if (settingsRes.data && settingsRes.data.startTime) {
+        setTimetableSettings(settingsRes.data)
+      }
+
+      // Fetch Timetable Entries for student's year
+      const entriesRes = await apiClient.getTimetableEntries(profile.data.year)
+      const dbEntries = entriesRes.data
+
+      const structuredData: any = {}
+      dbEntries.forEach((entry: any) => {
+        if (!structuredData[entry.day]) {
+          structuredData[entry.day] = {}
+        }
+        structuredData[entry.day][entry.periodIndex] = {
+          subject: entry.subject,
+          facultyName: entry.facultyName
+        }
+      })
+
+      setTimetableData(structuredData)
+    } catch (error) {
+      console.error("Failed to fetch timetable data", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // Helper to generate time slots based on settings (matched with HOD logic)
+  // Helper to generate time slots based on settings
   const generateTimeSlots = () => {
     const slots: any[] = []
     let currentTime = new Date(`2000-01-01T${timetableSettings.startTime}`)
@@ -74,7 +88,7 @@ export default function StudentTimetablePage() {
     while (periodCount < timetableSettings.periodsPerDay && slots.length < maxSlots) {
       periodCount++
       const startStr = currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })
-      currentTime.setMinutes(currentTime.getMinutes() + timetableSettings.periodDuration)
+      currentTime.setMinutes(currentTime.getMinutes() + (timetableSettings.periodDuration || 55))
       const endStr = currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })
 
       slots.push({
@@ -87,7 +101,7 @@ export default function StudentTimetablePage() {
 
       if (periodCount === timetableSettings.breakAfterPeriod) {
         const breakStart = endStr
-        currentTime.setMinutes(currentTime.getMinutes() + timetableSettings.breakDuration)
+        currentTime.setMinutes(currentTime.getMinutes() + (timetableSettings.breakDuration || 25))
         const breakEnd = currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })
 
         slots.push({
@@ -99,6 +113,14 @@ export default function StudentTimetablePage() {
       }
     }
     return slots
+  }
+
+  if (!user || loading || !studentData) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
   }
 
   const timeSlots = generateTimeSlots()
@@ -151,7 +173,7 @@ export default function StudentTimetablePage() {
                   {DAYS.map((day) => (
                     <tr key={day} className="border-b">
                       <td className="p-3 font-medium bg-muted/30">{day}</td>
-                      {timeSlots.map((slot) => {
+                      {timeSlots.map((slot, idx) => {
                         if (slot.type === "break") {
                           return (
                             <td key={slot.id} className="p-3 bg-orange-50/50 text-center relative">
@@ -160,11 +182,12 @@ export default function StudentTimetablePage() {
                           )
                         }
 
-                        const periodIdx = slot.periodNumber
-                        const entry = timetableData[studentData.year]?.[day]?.[periodIdx]
+                        // Use 0-based index for periods (ignoring breaks)
+                        const periodIdx = timeSlots.slice(0, idx).filter(s => s.type === 'class').length
+                        const entry = timetableData[day]?.[periodIdx]
 
                         return (
-                          <td key={slot.id} className="p-3 text-center">
+                          <td key={slot.id} className="p-3 text-center transition-colors hover:bg-muted/10">
                             {entry?.subject ? (
                               <div className="space-y-1">
                                 <Badge variant="default" className="whitespace-normal h-auto py-1 px-2">

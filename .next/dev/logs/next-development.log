@@ -1,50 +1,113 @@
-[00:00:45.354] Server  LOG      ✓ Ready in 36s
-[00:02:46.507] Server  LOG      ○ Compiling / ...
-[00:03:26.405] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
-[00:03:26.844] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770132221101}
-[00:03:37.541] Server  LOG     [NextAuth] Authorize called with: {}
-[00:03:37.969] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\[root-of-the-server]__653586b0._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.003] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next-auth_1810886e._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.057] Server  ERROR   E:\department-portal-2\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.097] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next_f977eb13._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.110] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.123] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.129] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.173] Server  ERROR   E:\department-portal-2\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.182] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.190] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:38.198] Server  ERROR   [NextAuth] Login request error: TypeError: fetch failed
-[00:03:38.336] Browser ERROR   Sign in failed: CredentialsSignin
-[00:03:45.181] Server  LOG     [NextAuth] Authorize called with: {}
-[00:03:45.200] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\[root-of-the-server]__653586b0._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.203] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next-auth_1810886e._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.215] Server  ERROR   E:\department-portal-2\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.224] Server  ERROR   E:\department-portal-2\.next\dev\server\chunks\node_modules_next_f977eb13._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.226] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.229] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.232] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.241] Server  ERROR   E:\department-portal-2\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.245] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.248] Server  ERROR   E:\department-portal-2\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:03:45.263] Server  ERROR   [NextAuth] Login request error: TypeError: fetch failed
-[00:03:45.400] Browser ERROR   Sign in failed: CredentialsSignin
-[12:44:07.736] Server  LOG     [NextAuth] Authorize called with: {}
-[12:44:52.297] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
-[12:44:52.691] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770177898664}
-[12:44:56.148] Server  LOG     [NextAuth] Authorize called with: {}
-[12:44:57.960] Server  LOG     [NextAuth] Authentication failed: "Internal server error"
-[12:44:57.973] Server  LOG     [NextAuth] Authentication failed: "Internal server error"
-[12:44:58.081] Browser ERROR   Sign in failed: CredentialsSignin
-[12:45:01.600] Server  LOG     [NextAuth] Authorize called with: {}
-[12:45:19.638] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
-[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
-[12:45:19.873] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770177925848}
-[12:45:25.824] Server  LOG     [NextAuth] Authorize called with: {}
-[12:45:32.063] Server  LOG     [NextAuth] Success: Authenticated as HOD
-[12:45:32.073] Server  LOG     [NextAuth] Authentication failed: "Invalid credentials"
-[12:45:33.084] Browser ERROR   Sign in failed: CredentialsSignin
+[00:00:02.112] Server  LOG      ✓ Ready in 1405ms
+[00:00:10.101] Server  LOG      ○ Compiling /dashboard/faculty/projects ...
+[00:00:11.465] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:12.398] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:12.398] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/faculty/projects","route":"/dashboard/faculty/projects"}
+[00:00:12.398] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty/projects","o":"http://localhost:3000/dashboard/faculty/projects","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966718058}
+[00:00:12.718] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:12.936] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:12.936] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:12.936] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966719269}
+[00:00:13.990] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:00:14.147] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:00:17.611] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty","o":"http://localhost:3000/dashboard/faculty","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966723940}
+[00:00:20.344] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:20.497] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:20.497] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:20.497] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966726830}
+[00:00:30.307] Server  LOG     [NextAuth] Authorize called with: {}
+[00:00:30.517] Server  LOG     [NextAuth] Success: Authenticated as HOD
+[00:00:30.674] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:00:31.360] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966737661}
+[00:00:36.912] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/students color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/students","o":"http://localhost:3000/dashboard/hod/students","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966743237}
+[00:00:40.475] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/students/cmlj5wh4i00038ocrlobepjai color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/students/[id]","o":"http://localhost:3000/dashboard/hod/students/cmlj5wh4i00038ocrlobepjai","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966746805}
+[00:00:48.072] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:00:53.170] Server  LOG     [NextAuth] Authorize called with: {}
+[00:00:53.421] Server  LOG     [NextAuth] Success: Authenticated as STUDENT
+[00:00:53.575] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:00:54.416] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/student color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/student","o":"http://localhost:3000/dashboard/student","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966760746}
+[00:01:56.724] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:56.892] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:01:56.892] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:01:56.892] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966823225}
+[00:02:01.091] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:02:02.187] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/students color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/students","o":"http://localhost:3000/dashboard/hod/students","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966828201}
+[00:02:16.332] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:02:17.557] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/students/cmlj5wh4i00058ocrb2we0sjh color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/students/[id]","o":"http://localhost:3000/dashboard/hod/students/cmlj5wh4i00058ocrb2we0sjh","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966843880}
+[00:02:21.481] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:02:24.229] Server  LOG     [NextAuth] Authorize called with: {}
+[00:02:24.401] Server  LOG     [NextAuth] Success: Authenticated as STUDENT
+[00:02:24.559] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:02:24.689] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/student color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/student","o":"http://localhost:3000/dashboard/student","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966851020}
+[00:03:29.082] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:03:30.442] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/students color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/students","o":"http://localhost:3000/dashboard/hod/students","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966916490}
+[00:03:31.447] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966917760}
+[00:03:35.898] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/projects","o":"http://localhost:3000/dashboard/hod/projects","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966922229}
+[00:03:57.230] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:03:57.230] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:10.114] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:10.114] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:14.185] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:14.185] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:28.221] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:28.221] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:04:32.386] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966978709}
+[00:04:37.525] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:37.679] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:04:37.679] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:04:37.679] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966984008}
+[00:04:42.854] Server  LOG     [NextAuth] Authorize called with: {}
+[00:04:42.996] Server  LOG     [NextAuth] Success: Authenticated as FACULTY
+[00:04:43.144] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:04:43.274] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty","o":"http://localhost:3000/dashboard/faculty","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966989586}
+[00:04:48.087] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty/projects","o":"http://localhost:3000/dashboard/faculty/projects","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770966994417}
+[00:05:09.186] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty","o":"http://localhost:3000/dashboard/faculty","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967015514}
+[00:05:10.833] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:10.979] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:10.979] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:05:10.979] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967017312}
+[00:05:18.851] Server  LOG     [NextAuth] Authorize called with: {}
+[00:05:19.334] Server  LOG     [NextAuth] Success: Authenticated as HOD
+[00:05:19.499] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:05:19.678] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967025965}
+[00:05:21.690] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/faculty color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/faculty","o":"http://localhost:3000/dashboard/hod/faculty","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967027967}
+[00:05:22.776] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967029091}
+[00:05:24.657] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/projects","o":"http://localhost:3000/dashboard/hod/projects","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967030981}
+[00:05:51.544] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:05:51.544] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:06:02.368] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967068690}
+[00:06:12.684] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:12.833] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:12.833] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:06:12.833] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967079166}
+[00:06:18.548] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:06:23.958] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:06:44.960] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:07:02.485] Server  LOG     [NextAuth] Authorize called with: {}
+[00:07:02.781] Server  LOG     [NextAuth] Success: Authenticated as HOD
+[00:07:02.926] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:07:03.059] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967129362}
+[00:07:05.140] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod/projects","o":"http://localhost:3000/dashboard/hod/projects","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967131467}
+[00:07:12.335] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:07:12.335] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:07:26.355] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/hod color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/hod","o":"http://localhost:3000/dashboard/hod","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967152679}
+[00:07:27.976] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:28.136] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:28.136] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:07:28.136] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967154469}
+[00:07:29.747] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:08:04.405] Server  LOG     [NextAuth] Authorize called with: {}
+[00:08:04.573] Server  LOG     [NextAuth] Success: Authenticated as FACULTY
+[00:08:04.840] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:08:04.840] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty","o":"http://localhost:3000/dashboard/faculty","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967191164}
+[00:08:10.706] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/faculty/projects color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/faculty/projects","o":"http://localhost:3000/dashboard/faculty/projects","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967197033}
+[00:08:17.913] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:11:19.979] Server  LOG      ✓ Compiled in 307ms
+[00:11:34.012] Server  LOG      ✓ Compiled in 263ms
+[00:12:09.377] Browser LOG     [TokenSync] Syncing accessToken to localStorage
+[00:12:12.721] Browser ERROR   Failed to fetch placement data {"code":"ERR_BAD_REQUEST","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"baseURL":"http://localhost:5000/api/v1","env":{},"headers":{"Accept":"application/json, text/plain, */*","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtbGo1d2g0aTAwMDU4b2NyYjJ3ZTBzamgiLCJ1c2VybmFtZSI6IjIzMUNHMDA0IiwibmFtZSI6IkFTV0lOIE4iLCJlbWFpbCI6Im4uYXN3aW4uMzY5QGdtYWlsLmNvbSIsInJvbGUiOiJTVFVERU5UIiwiZGVwYXJ0bWVudCI6IkIuU2MgQ29tcHV0ZXIgU2NpZW5jZSB3aXRoIENvZ25pdGl2ZSBTeXN0ZW1zIiwiaWF0IjoxNzcwOTY2ODUwLCJleHAiOjE3NzA5NzA0NTB9.c8x03qE6GQ0ym7MK_knPTNkftelqDdnJT6TiMRxEwZ0","Content-Type":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"/placement/applications","xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Request failed with status code 403","name":"AxiosError","stack":"AxiosError: Request failed with status code 403\n    at settle (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:11415:16)\n    at XMLHttpRequest.onloadend (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:11929:255)\n    at Axios.request (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:12733:49)\n    at async Promise.all (index 1)\n    at async fetchData (http://localhost:3000/_next/static/chunks/OneDrive_Desktop_department-portal-2_department-portal-2_4f05d492._.js:5065:53)","status":403}
+[00:12:12.721] Browser ERROR   Failed to fetch placement data {"code":"ERR_BAD_REQUEST","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"baseURL":"http://localhost:5000/api/v1","env":{},"headers":{"Accept":"application/json, text/plain, */*","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtbGo1d2g0aTAwMDU4b2NyYjJ3ZTBzamgiLCJ1c2VybmFtZSI6IjIzMUNHMDA0IiwibmFtZSI6IkFTV0lOIE4iLCJlbWFpbCI6Im4uYXN3aW4uMzY5QGdtYWlsLmNvbSIsInJvbGUiOiJTVFVERU5UIiwiZGVwYXJ0bWVudCI6IkIuU2MgQ29tcHV0ZXIgU2NpZW5jZSB3aXRoIENvZ25pdGl2ZSBTeXN0ZW1zIiwiaWF0IjoxNzcwOTY2ODUwLCJleHAiOjE3NzA5NzA0NTB9.c8x03qE6GQ0ym7MK_knPTNkftelqDdnJT6TiMRxEwZ0","Content-Type":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"/placement/applications","xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Request failed with status code 403","name":"AxiosError","stack":"AxiosError: Request failed with status code 403\n    at settle (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:11415:16)\n    at XMLHttpRequest.onloadend (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:11929:255)\n    at Axios.request (http://localhost:3000/_next/static/chunks/12a93_42d4238d._.js:12733:49)\n    at async Promise.all (index 1)\n    at async fetchData (http://localhost:3000/_next/static/chunks/OneDrive_Desktop_department-portal-2_department-portal-2_4f05d492._.js:5065:53)","status":403}
+[00:12:29.123] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:29.301] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:12:29.301] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:12:29.301] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1770967455634}

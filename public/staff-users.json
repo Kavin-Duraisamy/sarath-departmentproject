@@ -9,15 +9,6 @@
     "department": ""
   },
   {
-    "id": "hod-demo",
-    "username": "hod@example.com",
-    "password": "hod123",
-    "name": "HOD User",
-    "role": "hod",
-    "email": "hod@example.com",
-    "department": ""
-  },
-  {
     "id": "placement-demo",
     "username": "placement@example.com",
     "password": "placement123",
@@ -45,30 +36,21 @@
     "email": ""
   },
   {
-    "id": "1768837089596",
+    "id": "1770880722085",
     "username": "nirmala",
-    "password": "nirmala",
-    "name": "NIRMALA S",
+    "password": "hodcog",
+    "name": "NIRMALA",
     "role": "hod",
-    "department": "B.Sc Computer Science",
-    "email": "nirmalaseetharaman@gmail.com"
+    "department": "B.Sc Computer Science with Cognitive Systems",
+    "email": "sarathsk2516@gmail.com"
   },
   {
-    "id": "faculty-vp",
-    "username": "vp",
-    "password": "vp",
-    "name": "VP Faculty",
-    "role": "faculty",
-    "department": "B.Sc Computer Science",
-    "email": "vp@example.com"
-  },
-  {
-    "id": "1768841145235",
-    "username": "vpp",
-    "password": "vpp",
-    "name": "VISHNUPRIYA",
-    "role": "faculty",
-    "department": "B.Sc Computer Science",
-    "email": "vp@gmail.com"
+    "id": "1770880995028",
+    "username": "kavinduraisamy",
+    "password": "kavinprefenzo",
+    "name": "KAVIN",
+    "role": "hod",
+    "department": "PREFENZO",
+    "email": ""
   }
 ]

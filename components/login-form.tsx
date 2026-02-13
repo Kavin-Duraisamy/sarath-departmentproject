@@ -49,7 +49,12 @@ export function LoginForm() {
           const sessionResponse = await fetch("/api/auth/session");
           if (sessionResponse.ok) {
             const session = await sessionResponse.json();
-            const role = session?.user?.role;
+            const role = session?.user?.role?.toLowerCase();
+
+            // Sync accessToken to localStorage for apiClient
+            if (session?.accessToken) {
+              localStorage.setItem("accessToken", session.accessToken);
+            }
 
             // Redirect based on actual role from session
             if (role === "admin") {

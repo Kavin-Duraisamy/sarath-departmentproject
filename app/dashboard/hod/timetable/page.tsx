@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { ArrowLeft, Save, Settings, Clock, Plus, Trash2, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api"
 
 type Faculty = {
     id: string
@@ -57,12 +58,12 @@ export default function TimetablePage() {
     const [facultyList, setFacultyList] = useState<Faculty[]>([])
     const [timetable, setTimetable] = useState<TimetableData>({})
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     const [viewMode, setViewMode] = useState<"class" | "faculty">("class")
     const [selectedFacultyForView, setSelectedFacultyForView] = useState<string>("")
 
-    // Default settings based on request
-    // 8:30 start, 55 min period, break after 2 periods (10:20), 25 min break, 5 periods total
+    // Default settings
     const [settings, setSettings] = useState<TimetableSettings>({
         startTime: "08:30",
         periodDuration: 55,
@@ -72,80 +73,96 @@ export default function TimetablePage() {
     })
 
     useEffect(() => {
-        console.log("Timetable Page - Session Status:", status)
-        console.log("Timetable Page - Session Data:", session)
-
         if (status === "loading") return
         if (status === "unauthenticated") {
-            console.log("Redirecting: Unauthenticated")
             router.push("/")
             return
         }
 
         const userData = session?.user
-        if (!userData) return
-
-        console.log("Timetable Page - User Role:", userData.role)
-
-        if (userData.role?.toLowerCase() !== "hod") {
-            console.log("Redirecting: Invalid Role", userData.role)
-            router.push(`/dashboard/${userData.role?.toLowerCase()}`)
+        if (!userData || userData.role?.toLowerCase() !== "hod") {
+            router.push("/")
             return
         }
 
         setUser(userData)
+        fetchFaculty()
+        fetchData()
     }, [session, status, router])
 
-    // Load data on mount
-    useEffect(() => {
-        // Load faculty
+    const fetchFaculty = async () => {
         try {
-            const storedFaculty = JSON.parse(localStorage.getItem("faculty") || "[]")
-            // Also include HOD/Admins if needed, but primary is faculty list
-            const facultyUsers = JSON.parse(localStorage.getItem("facultyLogins") || "{}")
-            const combinedFaculty: Faculty[] = [...storedFaculty]
+            const response = await apiClient.getUsers()
+            const facultyUsers = response.data.filter((u: any) => u.role === 'FACULTY')
+            setFacultyList(facultyUsers)
+        } catch (error) {
+            console.error("Failed to fetch faculty", error)
+        }
+    }
 
-            // If "faculty" list is empty, try to populate from logins or use mock
-            if (combinedFaculty.length === 0) {
-                // Fallback mock data if completely empty
-                combinedFaculty.push(
-                    { id: "f1", name: "Dr. Smith", department: "CSE" },
-                    { id: "f2", name: "Prof. Johnson", department: "CSE" },
-                    { id: "f3", name: "Mrs. Davis", department: "Math" }
-                )
-            }
-            setFacultyList(combinedFaculty)
+    const fetchData = async () => {
+        try {
+            setLoading(true)
 
             // Load Settings
-            const storedSettings = localStorage.getItem("timetable_settings")
-            if (storedSettings) {
-                setSettings(JSON.parse(storedSettings))
-            }
-
-            // Load Timetable
-            const storedTimetable = localStorage.getItem("timetable_data")
-            if (storedTimetable) {
-                setTimetable(JSON.parse(storedTimetable))
-            } else {
-                // Initialize empty structure
-                const initial: TimetableData = { I: {}, II: {}, III: {} }
-                YEARS.forEach(year => {
-                    DAYS.forEach(day => {
-                        initial[year][day] = {}
-                    })
+            const settingsRes = await apiClient.getTimetableSettings()
+            if (settingsRes.data && settingsRes.data.startTime) {
+                setSettings({
+                    startTime: settingsRes.data.startTime,
+                    periodDuration: settingsRes.data.periodDuration,
+                    periodsPerDay: settingsRes.data.periodsPerDay,
+                    breakAfterPeriod: settingsRes.data.breakAfterPeriod,
+                    breakDuration: settingsRes.data.breakDuration
                 })
-                setTimetable(initial)
             }
 
-        } catch (e) {
-            console.error("Failed to load data", e)
-        }
-    }, [])
+            // Load all entries for all years to build the complex structure
+            // In a real app, maybe only load selected year, but here we keep the record structure
+            const initial: TimetableData = { I: {}, II: {}, III: {} }
+            YEARS.forEach(year => {
+                DAYS.forEach(day => {
+                    initial[year][day] = {}
+                })
+            })
 
-    const saveSettings = () => {
-        localStorage.setItem("timetable_settings", JSON.stringify(settings))
-        setIsSettingsOpen(false)
-        toast({ title: "Settings Saved", description: "Timetable configuration updated." })
+            const entriesRes = await apiClient.getTimetableEntries()
+            const dbEntries = entriesRes.data
+
+            dbEntries.forEach((entry: any) => {
+                if (initial[entry.year as keyof typeof initial]) {
+                    if (!initial[entry.year as keyof typeof initial][entry.day]) {
+                        initial[entry.year as keyof typeof initial][entry.day] = {}
+                    }
+                    initial[entry.year as keyof typeof initial][entry.day][entry.periodIndex] = {
+                        subject: entry.subject,
+                        facultyId: entry.facultyId || "_manual",
+                        facultyName: entry.facultyName || ""
+                    }
+                }
+            })
+
+            setTimetable(initial)
+        } catch (error) {
+            console.error("Failed to fetch timetable data", error)
+            toast({
+                title: "Error",
+                description: "Failed to load timetable data.",
+                variant: "destructive"
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const saveSettings = async () => {
+        try {
+            await apiClient.updateTimetableSettings(settings)
+            setIsSettingsOpen(false)
+            toast({ title: "Settings Saved", description: "Timetable configuration updated." })
+        } catch (error) {
+            console.error("Failed to save settings", error)
+            toast({ title: "Error", description: "Failed to save settings.", variant: "destructive" })
+        }
     }
 
     const handleEntryChange = (day: string, periodIndex: number, field: "subject" | "facultyId" | "facultyName", value: string) => {
@@ -158,7 +175,7 @@ export default function TimetablePage() {
         if (field === "facultyId") {
             if (value === "_manual") {
                 newEntry.facultyId = "_manual"
-                newEntry.facultyName = "" // Reset name for manual entry
+                newEntry.facultyName = ""
             } else {
                 const faculty = facultyList.find(f => f.id === value)
                 newEntry.facultyId = value
@@ -182,7 +199,39 @@ export default function TimetablePage() {
         }
 
         setTimetable(newTimetable)
-        localStorage.setItem("timetable_data", JSON.stringify(newTimetable))
+    }
+
+    const saveTimetable = async () => {
+        try {
+            const currentYearEntries = []
+            const yearData = timetable[selectedYear]
+
+            for (const day in yearData) {
+                for (const periodIdx in yearData[day]) {
+                    const entry = yearData[day][periodIdx]
+                    if (entry.subject) {
+                        currentYearEntries.push({
+                            year: selectedYear,
+                            day,
+                            periodIndex: parseInt(periodIdx),
+                            subject: entry.subject,
+                            facultyId: entry.facultyId,
+                            facultyName: entry.facultyName
+                        })
+                    }
+                }
+            }
+
+            await apiClient.updateTimetableEntries({
+                year: selectedYear,
+                entries: currentYearEntries
+            })
+
+            toast({ title: "Timetable Saved", description: `Timetable for Year ${selectedYear} has been updated.` })
+        } catch (error) {
+            console.error("Failed to save timetable", error)
+            toast({ title: "Error", description: "Failed to save timetable.", variant: "destructive" })
+        }
     }
 
     // Helper to generate time slots based on settings
@@ -191,16 +240,12 @@ export default function TimetablePage() {
         let currentTime = new Date(`2000-01-01T${settings.startTime}`)
         let periodCount = 0
 
-        // Safety limit to prevent infinite loops if bad settings
         const maxSlots = 20
 
         while (periodCount < settings.periodsPerDay && slots.length < maxSlots) {
             periodCount++
 
-            // Start of period
             const startStr = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
-
-            // Add period duration
             currentTime.setMinutes(currentTime.getMinutes() + settings.periodDuration)
             const endStr = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
 
@@ -212,264 +257,223 @@ export default function TimetablePage() {
                 periodNumber: periodCount
             })
 
-            // Check for break
             if (periodCount === settings.breakAfterPeriod) {
-                const breakStart = endStr
+                const bStartStr = endStr
                 currentTime.setMinutes(currentTime.getMinutes() + settings.breakDuration)
-                const breakEnd = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                const bEndStr = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
 
                 slots.push({
-                    id: `break`,
-                    startTime: breakStart,
-                    endTime: breakEnd,
+                    id: `b-${periodCount}`,
+                    startTime: bStartStr,
+                    endTime: bEndStr,
                     type: "break"
                 })
             }
         }
+
         return slots
+    }
+
+    if (!user || loading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        )
     }
 
     const timeSlots = generateTimeSlots()
 
-    // Helper: Find where a faculty is assigned at a specific slot
-    const findFacultyAssignment = (facultyId: string, day: string, periodIdx: number) => {
-        for (const year in timetable) {
-            const entry = timetable[year]?.[day]?.[periodIdx]
-            if (entry && (entry.facultyId === facultyId || (entry.facultyId === "_manual" && entry.facultyName === facultyList.find(f => f.id === facultyId)?.name))) {
-                return { year, subject: entry.subject }
-            }
-        }
-        return null
-    }
-
-    const handleFacultyAssignmentChange = (facultyId: string, facultyName: string, day: string, periodIdx: number, field: "year" | "subject" | "className", value: string) => {
-        const currentAssignment = findFacultyAssignment(facultyId, day, periodIdx)
-        const newTimetable = JSON.parse(JSON.stringify(timetable)) as TimetableData
-
-        if (field === "year" || field === "className") {
-            const newYear = value
-            const subject = currentAssignment ? currentAssignment.subject : ""
-
-            if (currentAssignment) {
-                const oldYearData = newTimetable[currentAssignment.year] || {}
-                const oldDayData = oldYearData[day] || {}
-                oldDayData[periodIdx] = { subject: "", facultyId: "", facultyName: "" }
-            }
-
-            if (newYear && newYear !== "none") {
-                if (!newTimetable[newYear]) newTimetable[newYear] = {}
-                if (!newTimetable[newYear][day]) newTimetable[newYear][day] = {}
-
-                newTimetable[newYear][day][periodIdx] = {
-                    subject: subject,
-                    facultyId: facultyId,
-                    facultyName: facultyName
-                }
-            }
-        }
-        else if (field === "subject") {
-            if (currentAssignment) {
-                const year = currentAssignment.year
-                if (newTimetable[year]?.[day]?.[periodIdx]) {
-                    newTimetable[year][day][periodIdx].subject = value
-                }
-            }
-        }
-
-        setTimetable(newTimetable)
-        localStorage.setItem("timetable_data", JSON.stringify(newTimetable))
-    }
-
     return (
-        <div className="min-h-screen bg-background pb-12">
-            <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="sm" onClick={() => router.back()}>
-                                <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back
-                            </Button>
-                            <h1 className="text-xl font-semibold">Timetable Management</h1>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "class" | "faculty")} className="mr-4">
-                                <TabsList>
-                                    <TabsTrigger value="class">Class View</TabsTrigger>
-                                    <TabsTrigger value="faculty">Faculty View</TabsTrigger>
-                                </TabsList>
-                            </Tabs>
-                            <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline">
-                                        <Settings className="h-4 w-4 mr-2" />
-                                        Settings
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Timetable Configuration</DialogTitle>
-                                        <CardDescription>Customize global timing settings for all years.</CardDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                        {/* Settings Inputs maintained... */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label>Start Time</Label>
-                                                <Input
-                                                    type="time"
-                                                    value={settings.startTime}
-                                                    onChange={(e) => setSettings({ ...settings, startTime: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Period Duration (mins)</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={settings.periodDuration}
-                                                    onChange={(e) => setSettings({ ...settings, periodDuration: parseInt(e.target.value) || 0 })}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label>Periods Per Day</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={settings.periodsPerDay}
-                                                    onChange={(e) => setSettings({ ...settings, periodsPerDay: parseInt(e.target.value) || 0 })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label>Break After Period</Label>
-                                                <Input
-                                                    type="number"
-                                                    value={settings.breakAfterPeriod}
-                                                    onChange={(e) => setSettings({ ...settings, breakAfterPeriod: parseInt(e.target.value) || 0 })}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Break Duration (mins)</Label>
-                                            <Input
-                                                type="number"
-                                                value={settings.breakDuration}
-                                                onChange={(e) => setSettings({ ...settings, breakDuration: parseInt(e.target.value) || 0 })}
-                                            />
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <Button onClick={saveSettings}>Save Changes</Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
+        <div className="min-h-screen bg-background">
+            <header className="border-b bg-card">
+                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard/hod")}>
+                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            Back to Dashboard
+                        </Button>
+                        <h1 className="text-xl font-bold">Timetable Management</h1>
                     </div>
                 </div>
             </header>
 
             <main className="container mx-auto px-4 py-8">
-                {viewMode === "class" ? (
-                    <Tabs value={selectedYear} onValueChange={setSelectedYear} className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <TabsList>
-                                {YEARS.map(year => (
-                                    <TabsTrigger key={year} value={year} className="w-32">
-                                        Year {year}
-                                    </TabsTrigger>
-                                ))}
-                            </TabsList>
-                            <div className="text-sm text-muted-foreground flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                <span>Total: {settings.periodsPerDay} Periods | Break after period {settings.breakAfterPeriod}</span>
-                            </div>
-                        </div>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div className="lg:col-span-1 space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Controls</CardTitle>
+                                <CardDescription>Select year to manage</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label>Academic Year</Label>
+                                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {YEARS.map(year => (
+                                                <SelectItem key={year} value={year}>Year {year}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                        {YEARS.map(year => (
-                            <TabsContent key={year} value={year} className="space-y-6">
-                                <div className="overflow-x-auto overflow-y-auto max-h-[70vh] border rounded-xl shadow-sm bg-card custom-scrollbar">
-                                    <table className="w-full text-sm text-left border-separate border-spacing-0">
-                                        <thead className="bg-muted text-xs uppercase sticky top-0 z-30">
-                                            <tr>
-                                                <th className="px-6 py-4 font-medium sticky left-0 top-0 bg-secondary z-40 w-40 border-r border-b shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.1)]">
-                                                    Day / Time
-                                                </th>
+                                <div className="space-y-2 pt-2">
+                                    <Button className="w-full" onClick={saveTimetable}>
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Save All Changes
+                                    </Button>
+                                </div>
+                                <div className="space-y-2">
+                                    <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" className="w-full">
+                                                <Settings className="h-4 w-4 mr-2" />
+                                                Timetable Settings
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Timetable Configuration</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label className="text-right">Start Time</Label>
+                                                    <Input
+                                                        type="time"
+                                                        className="col-span-3"
+                                                        value={settings.startTime}
+                                                        onChange={(e) => setSettings({ ...settings, startTime: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label className="text-right whitespace-nowrap">Period (min)</Label>
+                                                    <Input
+                                                        type="number"
+                                                        className="col-span-3"
+                                                        value={settings.periodDuration}
+                                                        onChange={(e) => setSettings({ ...settings, periodDuration: parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label className="text-right whitespace-nowrap">Periods/Day</Label>
+                                                    <Input
+                                                        type="number"
+                                                        className="col-span-3"
+                                                        value={settings.periodsPerDay}
+                                                        onChange={(e) => setSettings({ ...settings, periodsPerDay: parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label className="text-right whitespace-nowrap">Break After</Label>
+                                                    <Input
+                                                        type="number"
+                                                        className="col-span-3"
+                                                        placeholder="Period #"
+                                                        value={settings.breakAfterPeriod}
+                                                        onChange={(e) => setSettings({ ...settings, breakAfterPeriod: parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label className="text-right whitespace-nowrap">Break (min)</Label>
+                                                    <Input
+                                                        type="number"
+                                                        className="col-span-3"
+                                                        value={settings.breakDuration}
+                                                        onChange={(e) => setSettings({ ...settings, breakDuration: parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <DialogFooter>
+                                                <Button onClick={saveSettings}>Apply & Save Settings</Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="lg:col-span-3">
+                        <Card className="min-h-[600px] overflow-auto">
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle>Schedule: Year {selectedYear}</CardTitle>
+                                    <CardDescription>Click slots to edit or assign faculty</CardDescription>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="border rounded-lg overflow-hidden">
+                                    <table className="w-full border-collapse">
+                                        <thead>
+                                            <tr className="bg-muted/50">
+                                                <th className="border p-2 text-left bg-card w-32 sticky left-0 z-10">Day / Time</th>
                                                 {timeSlots.map(slot => (
-                                                    <th key={slot.id} className={`px-6 py-4 font-medium text-center border-l border-b min-w-[200px] ${slot.type === 'break' ? 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-400' : ''}`}>
-                                                        <div className="flex flex-col gap-1">
-                                                            <span>{slot.type === 'class' ? `Period ${slot.periodNumber}` : 'BREAK'}</span>
-                                                            <span className="text-[10px] text-muted-foreground font-normal bg-background/50 px-2 py-0.5 rounded-full w-fit mx-auto border">
-                                                                {slot.startTime} - {slot.endTime}
-                                                            </span>
+                                                    <th key={slot.id} className={`border p-2 min-w-[150px] ${slot.type === 'break' ? 'bg-muted/30 w-16 min-w-[80px]' : ''}`}>
+                                                        <div className="flex flex-col items-center">
+                                                            <span className="text-xs text-muted-foreground">{slot.startTime}</span>
+                                                            {slot.type === 'class' ? (
+                                                                <span className="font-medium">Period {slot.periodNumber}</span>
+                                                            ) : (
+                                                                <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 rounded-full uppercase">Break</span>
+                                                            )}
+                                                            <span className="text-xs text-muted-foreground">{slot.endTime}</span>
                                                         </div>
                                                     </th>
                                                 ))}
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y">
+                                        <tbody>
                                             {DAYS.map(day => (
-                                                <tr key={day} className="transition-colors">
-                                                    <td className="px-6 py-4 font-medium sticky left-0 bg-card z-10 border-r border-b shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">{day}</td>
-                                                    {timeSlots.map((slot, index) => {
+                                                <tr key={day} className="hover:bg-muted/10">
+                                                    <td className="border p-4 font-bold bg-card sticky left-0 z-10">{day}</td>
+                                                    {timeSlots.map((slot, idx) => {
                                                         if (slot.type === 'break') {
-                                                            return (
-                                                                <td key={slot.id} className="px-6 py-4 bg-orange-50 dark:bg-orange-900 border-l text-center text-muted-foreground font-medium text-xs tracking-widest relative">
-                                                                    <div className="absolute inset-y-2 left-1/2 w-0.5 bg-orange-200 -translate-x-1/2"></div>
-                                                                    <span className="relative bg-background px-2 text-orange-300">BREAK</span>
-                                                                </td>
-                                                            )
+                                                            return <td key={slot.id} className="border bg-muted/20"></td>
                                                         }
 
-                                                        const periodIdx = slot.periodNumber || 0
-                                                        const entry = timetable[year]?.[day]?.[periodIdx] || { subject: "", facultyName: "" }
-                                                        const isManual = entry.facultyId === "_manual"
+                                                        // Calculate period index (ignoring breaks)
+                                                        const periodIdx = timeSlots.slice(0, idx).filter(s => s.type === 'class').length
+                                                        const entry = timetable[selectedYear]?.[day]?.[periodIdx] || { subject: "", facultyId: "", facultyName: "" }
 
                                                         return (
-                                                            <td key={slot.id} className="px-4 py-3 border-l align-top">
-                                                                <div className="space-y-2 group">
+                                                            <td key={slot.id} className="border p-2 group transition-colors hover:bg-muted/5">
+                                                                <div className="space-y-2">
                                                                     <Input
-                                                                        placeholder="Subject Name"
-                                                                        className="h-8 text-xs font-medium border-transparent bg-transparent hover:bg-background hover:border-input focus:bg-background focus:border-ring transition-all placeholder:text-muted-foreground/50"
+                                                                        placeholder="Subject"
+                                                                        className="h-8 text-sm focus-visible:ring-1 border-transparent hover:border-input bg-transparent"
                                                                         value={entry.subject}
                                                                         onChange={(e) => handleEntryChange(day, periodIdx, "subject", e.target.value)}
                                                                     />
 
-                                                                    {isManual ? (
-                                                                        <div className="flex items-center gap-1">
-                                                                            <Input
-                                                                                placeholder="Type Faculty Name"
-                                                                                className="h-7 text-xs border-transparent bg-muted/40 hover:bg-background hover:border-input focus:bg-background focus:border-ring transition-all placeholder:text-muted-foreground/50 w-full"
-                                                                                value={entry.facultyName}
-                                                                                onChange={(e) => handleEntryChange(day, periodIdx, "facultyName", e.target.value)}
-                                                                                autoFocus
-                                                                            />
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                                                                                onClick={() => handleEntryChange(day, periodIdx, "facultyId", "")}
-                                                                            >
-                                                                                <X className="h-3 w-3" />
-                                                                            </Button>
-                                                                        </div>
-                                                                    ) : (
+                                                                    <div className="flex flex-col gap-1">
                                                                         <Select
-                                                                            value={entry.facultyId}
+                                                                            value={entry.facultyId || "_manual"}
                                                                             onValueChange={(val) => handleEntryChange(day, periodIdx, "facultyId", val)}
                                                                         >
-                                                                            <SelectTrigger className="h-7 text-xs border-transparent bg-muted/40 hover:bg-background hover:border-input focus:ring-0">
-                                                                                <SelectValue placeholder="Select Faculty" />
+                                                                            <SelectTrigger className="h-7 text-[10px] w-full border-transparent hover:border-input bg-muted/30">
+                                                                                <SelectValue placeholder="Faculty" />
                                                                             </SelectTrigger>
                                                                             <SelectContent>
+                                                                                <SelectItem value="_manual">-- External/Manual --</SelectItem>
                                                                                 {facultyList.map(f => (
                                                                                     <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
                                                                                 ))}
-                                                                                <SelectItem value="_manual" className="font-medium text-primary">
-                                                                                    + Other Dept / Manual...
-                                                                                </SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
-                                                                    )}
+
+                                                                        {entry.facultyId === "_manual" && (
+                                                                            <Input
+                                                                                placeholder="Faculty Name"
+                                                                                className="h-7 text-[10px] focus-visible:ring-1 border-transparent hover:border-input bg-muted/10 italic"
+                                                                                value={entry.facultyName}
+                                                                                onChange={(e) => handleEntryChange(day, periodIdx, "facultyName", e.target.value)}
+                                                                            />
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         )
@@ -479,143 +483,10 @@ export default function TimetablePage() {
                                         </tbody>
                                     </table>
                                 </div>
-                            </TabsContent>
-                        ))}
-                    </Tabs>
-                ) : (
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Manage Faculty Workload</CardTitle>
-                                <CardDescription>Select a faculty member to assign classes and subjects.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="max-w-md">
-                                    <Label>Select Faculty</Label>
-                                    <Select value={selectedFacultyForView} onValueChange={setSelectedFacultyForView}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Faculty Member" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {facultyList.map(f => (
-                                                <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
                             </CardContent>
                         </Card>
-
-                        {selectedFacultyForView && (
-                            <div className="overflow-x-auto overflow-y-auto max-h-[70vh] border rounded-xl shadow-sm bg-card custom-scrollbar">
-                                <table className="w-full text-sm text-left border-separate border-spacing-0">
-                                    <thead className="bg-muted text-xs uppercase sticky top-0 z-30">
-                                        <tr>
-                                            <th className="px-6 py-4 font-medium sticky left-0 top-0 bg-secondary z-40 w-40 border-r border-b shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.1)]">
-                                                Day / Time
-                                            </th>
-                                            {timeSlots.map(slot => (
-                                                <th key={slot.id} className={`px-6 py-4 font-medium text-center border-l border-b min-w-[200px] ${slot.type === 'break' ? 'bg-orange-100/50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-400' : ''}`}>
-                                                    <div className="flex flex-col gap-1">
-                                                        <span>{slot.type === 'class' ? `Period ${slot.periodNumber}` : 'BREAK'}</span>
-                                                        <span className="text-[10px] text-muted-foreground font-normal bg-background/50 px-2 py-0.5 rounded-full w-fit mx-auto border">
-                                                            {slot.startTime} - {slot.endTime}
-                                                        </span>
-                                                    </div>
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y">
-                                        {DAYS.map(day => (
-                                            <tr key={day} className="transition-colors">
-                                                <td className="px-6 py-4 font-medium sticky left-0 bg-card z-10 border-r border-b shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">{day}</td>
-                                                {timeSlots.map((slot) => {
-                                                    if (slot.type === 'break') {
-                                                        return (
-                                                            <td key={slot.id} className="px-6 py-4 bg-orange-50 border-l text-center text-muted-foreground font-medium text-xs tracking-widest relative">
-                                                                <div className="absolute inset-y-2 left-1/2 w-0.5 bg-orange-200 -translate-x-1/2"></div>
-                                                                <span className="relative bg-background px-2 text-orange-300">BREAK</span>
-                                                            </td>
-                                                        )
-                                                    }
-
-                                                    const periodIdx = slot.periodNumber || 0
-                                                    const assignment = findFacultyAssignment(selectedFacultyForView, day, periodIdx)
-                                                    const facultyObj = facultyList.find(f => f.id === selectedFacultyForView)
-                                                    const facultyName = facultyObj ? facultyObj.name : ""
-
-                                                    // Check if the assigned class is a system year or a custom one
-                                                    const isSystemYear = !!(assignment && (assignment.year === "I" || assignment.year === "II" || assignment.year === "III"))
-                                                    const isManual = !!(assignment && assignment.year === "_manual")
-
-                                                    return (
-                                                        <td key={slot.id} className="px-4 py-3 border-l align-top">
-                                                            <div className="space-y-2">
-                                                                {isManual ? (
-                                                                    <div className="flex items-center gap-1">
-                                                                        <Input
-                                                                            placeholder="Type Class Name"
-                                                                            className="h-7 text-xs bg-muted"
-                                                                            defaultValue=""
-                                                                            onBlur={(e) => {
-                                                                                if (e.target.value) {
-                                                                                    handleFacultyAssignmentChange(selectedFacultyForView, facultyName, day, periodIdx, "className", e.target.value)
-                                                                                } else {
-                                                                                    handleFacultyAssignmentChange(selectedFacultyForView, facultyName, day, periodIdx, "year", "none")
-                                                                                }
-                                                                            }}
-                                                                            autoFocus
-                                                                        />
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            className="h-6 w-6"
-                                                                            onClick={() => handleFacultyAssignmentChange(selectedFacultyForView, facultyName, day, periodIdx, "year", "none")}
-                                                                        >
-                                                                            <X className="h-3 w-3" />
-                                                                        </Button>
-                                                                    </div>
-                                                                ) : (
-                                                                    <Select
-                                                                        value={assignment ? (isSystemYear ? assignment.year : "_custom") : "none"}
-                                                                        onValueChange={(val) => handleFacultyAssignmentChange(selectedFacultyForView, facultyName, day, periodIdx, "year", val)}
-                                                                    >
-                                                                        <SelectTrigger className="h-7 text-xs bg-muted">
-                                                                            <SelectValue placeholder="Select Class" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            <SelectItem value="none">Free</SelectItem>
-                                                                            {YEARS.map(y => <SelectItem key={y} value={y}>Year {y}</SelectItem>)}
-                                                                            {!isSystemYear && assignment && assignment.year !== "none" && (
-                                                                                <SelectItem value="_custom">{assignment.year}</SelectItem>
-                                                                            )}
-                                                                            <SelectItem value="_manual" className="font-medium text-primary">
-                                                                                + Other Dept / Manual...
-                                                                            </SelectItem>
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                )}
-
-                                                                <Input
-                                                                    placeholder="Subject"
-                                                                    className="h-7 text-xs"
-                                                                    value={assignment ? assignment.subject : ""}
-                                                                    disabled={!assignment || !!isManual}
-                                                                    onChange={(e) => handleFacultyAssignmentChange(selectedFacultyForView, facultyName, day, periodIdx, "subject", e.target.value)}
-                                                                />
-                                                            </div>
-                                                        </td>
-                                                    )
-                                                })}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
                     </div>
-                )}
+                </div>
             </main>
         </div>
     )

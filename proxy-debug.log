@@ -1,0 +1,226 @@
+
+[2026-02-12T07:39:04.821Z] [POST] User creation request received
+
+[2026-02-12T07:39:04.822Z] [POST] Getting session
+
+[2026-02-12T07:39:04.834Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:39:04.838Z] [Proxy] Creating user:
+"deepa"
+
+[2026-02-12T07:39:05.263Z] [Proxy] Backend response status:
+500
+
+[2026-02-12T07:39:05.266Z] [Proxy] Backend data:
+{
+  "error": "Internal server error"
+}
+
+[2026-02-12T07:40:34.364Z] [POST] User creation request received
+
+[2026-02-12T07:40:34.364Z] [POST] Getting session
+
+[2026-02-12T07:40:34.372Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:40:34.375Z] [Proxy] Creating user:
+"deepa"
+
+[2026-02-12T07:40:34.809Z] [Proxy] Backend response status:
+500
+
+[2026-02-12T07:40:34.812Z] [Proxy] Backend data:
+{
+  "error": "Internal server error"
+}
+
+[2026-02-12T07:40:41.474Z] [POST] User creation request received
+
+[2026-02-12T07:40:41.475Z] [POST] Getting session
+
+[2026-02-12T07:40:41.483Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:40:41.485Z] [Proxy] Creating user:
+"deepa"
+
+[2026-02-12T07:40:42.153Z] [Proxy] Backend response status:
+500
+
+[2026-02-12T07:40:42.156Z] [Proxy] Backend data:
+{
+  "error": "Internal server error"
+}
+
+[2026-02-12T07:44:54.566Z] [POST] User creation request received
+
+[2026-02-12T07:44:54.588Z] [POST] Getting session
+
+[2026-02-12T07:44:54.646Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:44:54.648Z] [Proxy] Creating user:
+"deepa"
+
+[2026-02-12T07:44:55.452Z] [Proxy] Backend response status:
+201
+
+[2026-02-12T07:44:55.472Z] [Proxy] Backend data:
+{
+  "id": "cmlj5lfxq00008ocr1iu44xra",
+  "username": "deepa",
+  "email": null,
+  "name": "deepa",
+  "role": "HOD",
+  "department": "deepa"
+}
+
+[2026-02-12T07:46:57.999Z] [POST] User creation request received
+
+[2026-02-12T07:46:58.025Z] [POST] Getting session
+
+[2026-02-12T07:46:58.037Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:46:58.039Z] [Proxy] Creating user:
+"nirmala"
+
+[2026-02-12T07:46:58.865Z] [Proxy] Backend response status:
+409
+
+[2026-02-12T07:46:58.867Z] [Proxy] Backend data:
+{
+  "error": "Username or email already exists"
+}
+
+[2026-02-12T07:47:53.657Z] [POST] User creation request received
+
+[2026-02-12T07:47:53.706Z] [POST] Getting session
+
+[2026-02-12T07:47:53.711Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:47:53.712Z] [Proxy] Creating user:
+"nirmala"
+
+[2026-02-12T07:47:53.987Z] [Proxy] Backend response status:
+201
+
+[2026-02-12T07:47:53.989Z] [Proxy] Backend data:
+{
+  "id": "cmlj5p9zj00028ocr3s4c67b7",
+  "username": "nirmala",
+  "email": null,
+  "name": "NIRMALA",
+  "role": "HOD",
+  "department": "B.Sc Computer Science with Cognitive Systems"
+}
+
+[2026-02-12T07:56:54.866Z] [POST] User creation request received
+
+[2026-02-12T07:56:54.866Z] [POST] Getting session
+
+[2026-02-12T07:56:54.881Z] [POST] Headers obtained
+"yes"
+
+[2026-02-12T07:56:54.883Z] [Proxy] Creating user:
+"kavin"
+
+[2026-02-12T07:56:55.381Z] [Proxy] Backend response status:
+201
+
+[2026-02-12T07:56:55.383Z] [Proxy] Backend data:
+{
+  "id": "cmlj60vpg001u8ocrl8ocimr5",
+  "username": "kavin",
+  "email": null,
+  "name": "kavin",
+  "role": "HOD",
+  "department": "bca"
+}
+
+[2026-02-13T04:28:00.544Z] [POST] User creation request received
+
+[2026-02-13T04:28:00.547Z] [POST] Getting session
+
+[2026-02-13T04:28:00.561Z] [POST] Headers obtained
+"yes"
+
+[2026-02-13T04:28:00.563Z] [Proxy] Creating user:
+"senthol"
+
+[2026-02-13T04:28:00.909Z] [Proxy] Backend response status:
+201
+
+[2026-02-13T04:28:00.911Z] [Proxy] Backend data:
+{
+  "id": "cmlke02oy0000qgs2xbswscns",
+  "username": "senthol",
+  "email": "senthiler@gmail.com",
+  "name": "SENTHIL",
+  "role": "FACULTY",
+  "department": "B.Sc Computer Science with Cognitive Systems"
+}
+
+[2026-02-13T04:50:26.887Z] [POST] User creation request received
+
+[2026-02-13T04:50:26.888Z] [POST] Getting session
+
+[2026-02-13T04:50:26.899Z] [POST] Headers obtained
+"yes"
+
+[2026-02-13T04:50:26.901Z] [Proxy] Creating user:
+"vp"
+
+[2026-02-13T04:50:27.314Z] [Proxy] Backend response status:
+409
+
+[2026-02-13T04:50:27.316Z] [Proxy] Backend data:
+{
+  "error": "Username or email already exists"
+}
+
+[2026-02-13T04:53:34.384Z] [POST] User creation request received
+
+[2026-02-13T04:53:34.386Z] [POST] Getting session
+
+[2026-02-13T04:53:34.398Z] [POST] Headers obtained
+"yes"
+
+[2026-02-13T04:53:34.400Z] [Proxy] Creating user:
+"vp"
+
+[2026-02-13T04:53:34.817Z] [Proxy] Backend response status:
+409
+
+[2026-02-13T04:53:34.818Z] [Proxy] Backend data:
+{
+  "error": "Username or email already exists"
+}
+
+[2026-02-13T05:12:20.557Z] [POST] User creation request received
+
+[2026-02-13T05:12:20.559Z] [POST] Getting session
+
+[2026-02-13T05:12:20.577Z] [POST] Headers obtained
+"yes"
+
+[2026-02-13T05:12:20.579Z] [Proxy] Creating user:
+"vpp"
+
+[2026-02-13T05:12:20.960Z] [Proxy] Backend response status:
+201
+
+[2026-02-13T05:12:20.963Z] [Proxy] Backend data:
+{
+  "id": "cmlkfl36c0000hcah7kq52ajb",
+  "username": "vpp",
+  "email": "vp@gmail.com",
+  "name": "VISHNU PRIYA",
+  "role": "FACULTY",
+  "department": "B.Sc Computer Science with Cognitive Systems",
+  "assignedYears": [
+    "II"
+  ]
+}

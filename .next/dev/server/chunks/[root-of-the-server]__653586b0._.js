@@ -140,6 +140,17 @@ function readStaffUsers() {
         return [];
     }
 }
+function logDebug(message, data) {
+    try {
+        const logPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'auth-debug.log');
+        const timestamp = new Date().toISOString();
+        const start = `\n[${timestamp}] ${message}\n`;
+        const payload = data ? JSON.stringify(data, null, 2) + '\n' : '';
+        __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["default"].appendFileSync(logPath, start + payload);
+    } catch (e) {
+        console.error("Failed to write to debug log", e);
+    }
+}
 const authOptions = {
     providers: [
         (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$providers$2f$credentials$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"])({
@@ -157,11 +168,17 @@ const authOptions = {
             },
             async authorize (credentials) {
                 console.log("[NextAuth] Authorize called with:", credentials);
+                logDebug("Authorize called", {
+                    email: credentials?.email
+                });
                 if (!credentials?.email || !credentials?.password) {
+                    logDebug("Missing credentials");
                     return null;
                 }
                 try {
-                    const response = await fetch(`${("TURBOPACK compile-time value", "http://localhost:5000/api/v1")}/auth/login`, {
+                    const apiUrl = `${("TURBOPACK compile-time value", "http://localhost:5000/api/v1")}/auth/login`;
+                    logDebug(`Fetching ${apiUrl}`);
+                    const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -171,9 +188,13 @@ const authOptions = {
                             password: credentials.password
                         })
                     });
+                    logDebug("Response status", response.status);
                     const data = await response.json();
                     if (response.ok && data.user) {
                         console.log(`[NextAuth] Success: Authenticated as ${data.user.role}`);
+                        logDebug("Login Success", {
+                            role: data.user.role
+                        });
                         return {
                             id: data.user.id,
                             name: data.user.name,
@@ -185,9 +206,14 @@ const authOptions = {
                         };
                     }
                     console.log("[NextAuth] Authentication failed:", data.error || "Unknown error");
+                    logDebug("Authentication failed", data);
                     return null;
                 } catch (error) {
                     console.error("[NextAuth] Login request error:", error);
+                    logDebug("Login Request Error", {
+                        message: error.message,
+                        stack: error.stack
+                    });
                     return null;
                 }
             }

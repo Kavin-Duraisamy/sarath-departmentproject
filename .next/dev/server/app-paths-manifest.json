@@ -1,4 +1,12 @@
 {
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/dashboard/faculty/page": "app/dashboard/faculty/page.js",
+  "/dashboard/faculty/projects/page": "app/dashboard/faculty/projects/page.js",
+  "/dashboard/hod/faculty/page": "app/dashboard/hod/faculty/page.js",
+  "/dashboard/hod/page": "app/dashboard/hod/page.js",
+  "/dashboard/hod/projects/page": "app/dashboard/hod/projects/page.js",
+  "/dashboard/hod/students/[id]/page": "app/dashboard/hod/students/[id]/page.js",
+  "/dashboard/hod/students/page": "app/dashboard/hod/students/page.js",
+  "/dashboard/student/page": "app/dashboard/student/page.js",
   "/page": "app/page.js"
 }

@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { apiClient } from "@/lib/api"
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, CheckCircle } from "lucide-react"
@@ -10,36 +13,54 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function ApplicationsPage() {
   const router = useRouter()
+  const { toast } = useToast()
+  const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
   const [applications, setApplications] = useState<any[]>([])
   const [statusFilter, setStatusFilter] = useState<string>("all")
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
+    if (status === "loading") return
+    if (status === "unauthenticated") {
       router.push("/")
       return
     }
 
-    const userData = JSON.parse(storedUser)
-    if (userData.role !== "placement") {
-      router.push(`/dashboard/${userData.role}`)
+    const userData = session?.user
+    if (!userData || userData.role !== "placement") {
+      router.push("/")
       return
     }
 
     setUser(userData)
+    fetchApplications()
+  }, [router, session, status])
 
-    // Load applications
-    const storedApplications = localStorage.getItem("applications")
-    if (storedApplications) {
-      setApplications(JSON.parse(storedApplications))
+  const fetchApplications = async () => {
+    try {
+      const response = await apiClient.getApplications()
+      setApplications(response.data)
+    } catch (error) {
+      console.error("Failed to fetch applications", error)
     }
-  }, [router])
+  }
 
-  const handleMarkPlaced = (applicationId: string) => {
-    const updated = applications.map((app) => (app.id === applicationId ? { ...app, status: "placed" } : app))
-    setApplications(updated)
-    localStorage.setItem("applications", JSON.stringify(updated))
+  const handleMarkPlaced = async (applicationId: string) => {
+    try {
+      await apiClient.updateApplicationStatus(applicationId, "SELECTED")
+      toast({
+        title: "Success",
+        description: "Student marked as placed."
+      })
+      fetchApplications()
+    } catch (error) {
+      console.error("Failed to update status", error)
+      toast({
+        title: "Error",
+        description: "Failed to update application status.",
+        variant: "destructive"
+      })
+    }
   }
 
   const filteredApplications =
@@ -93,26 +114,26 @@ export default function ApplicationsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg">{application.studentName}</CardTitle>
+                      <CardTitle className="text-lg">{application.student?.name}</CardTitle>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {application.studentRollNumber} - Applied for {application.companyName}
+                        {application.student?.rollNumber} - Applied for {application.company?.name}
                       </p>
                     </div>
-                    <Badge variant={application.status === "placed" ? "default" : "secondary"}>
-                      {application.status}
+                    <Badge variant={application.status === "SELECTED" ? "default" : "secondary"}>
+                      {application.status === "SELECTED" ? "Placed" : application.status}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Role:</span> {application.role}
+                      <span className="text-muted-foreground">Role:</span> {application.company?.jobRole}
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Package:</span> {application.package}
+                      <span className="text-muted-foreground">Package:</span> {application.company?.package}
                     </div>
                   </div>
-                  {application.status !== "placed" && (
+                  {application.status !== "SELECTED" && (
                     <div className="mt-4">
                       <Button size="sm" onClick={() => handleMarkPlaced(application.id)}>
                         <CheckCircle className="h-4 w-4 mr-2" />

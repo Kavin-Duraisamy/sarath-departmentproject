@@ -1,0 +1,16 @@
+Database connection successful
+User sample: {
+  "id": "cmlj5by1q000011y5hymz5hg1",
+  "username": "admin",
+  "email": "admin@college.edu",
+  "password": "$2a$10$O.6kf7jLfrmUBcLVpkHO1.qje5lxrca6mJMaRu33Wv6kNC3PzNp7K",
+  "name": "System Admin",
+  "role": "ADMIN",
+  "department": null,
+  "phone": null,
+  "assignedYears": [],
+  "subjects": [],
+  "createdAt": "2026-02-12T07:37:31.933Z",
+  "updatedAt": "2026-02-12T07:37:31.933Z"
+}
+Column "subjects" exists

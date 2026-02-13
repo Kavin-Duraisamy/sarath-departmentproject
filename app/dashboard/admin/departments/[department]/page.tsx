@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, LogOut, GraduationCap } from "lucide-react"
+import { apiClient } from "@/lib/api"
 
 interface YearStats {
     year: "I" | "II" | "III"
@@ -19,6 +20,7 @@ export default function DepartmentDetailPage({ params }: { params: Promise<{ dep
     const [user, setUser] = useState<any>(null)
     const [departmentName, setDepartmentName] = useState<string>("")
     const [yearStats, setYearStats] = useState<YearStats[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (status === "loading") return
@@ -39,32 +41,39 @@ export default function DepartmentDetailPage({ params }: { params: Promise<{ dep
         // Decode department name from URL
         const decodedDept = decodeURIComponent(unwrappedParams.department)
         setDepartmentName(decodedDept)
-
-        // Load students and filter by department
-        const students = JSON.parse(localStorage.getItem("students") || "[]")
-        const deptStudents = students.filter((s: any) => s.department === decodedDept)
-
-        // Count students by year
-        const yearCounts: Record<"I" | "II" | "III", number> = {
-            I: 0,
-            II: 0,
-            III: 0
-        }
-
-        deptStudents.forEach((student: any) => {
-            if (student.year === "I" || student.year === "II" || student.year === "III") {
-                yearCounts[student.year as "I" | "II" | "III"]++
-            }
-        })
-
-        const stats: YearStats[] = [
-            { year: "I", studentCount: yearCounts.I },
-            { year: "II", studentCount: yearCounts.II },
-            { year: "III", studentCount: yearCounts.III }
-        ]
-
-        setYearStats(stats)
+        fetchYearStats(decodedDept)
     }, [session, status, router, unwrappedParams.department])
+
+    const fetchYearStats = async (deptName: string) => {
+        try {
+            setLoading(true)
+            // Fetch all students of this department
+            const res = await apiClient.getStudents({ department: deptName })
+            const students = res.data
+
+            const yearCounts: Record<"I" | "II" | "III", number> = {
+                I: 0,
+                II: 0,
+                III: 0
+            }
+
+            students.forEach((student: any) => {
+                if (student.year === "I" || student.year === "II" || student.year === "III") {
+                    yearCounts[student.year as "I" | "II" | "III"]++
+                }
+            })
+
+            setYearStats([
+                { year: "I", studentCount: yearCounts.I },
+                { year: "II", studentCount: yearCounts.II },
+                { year: "III", studentCount: yearCounts.III }
+            ])
+        } catch (error) {
+            console.error("Failed to fetch year stats", error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleLogout = () => {
         signOut({ callbackUrl: "/" })
@@ -81,9 +90,9 @@ export default function DepartmentDetailPage({ params }: { params: Promise<{ dep
 
     const getYearColor = (year: string) => {
         switch (year) {
-            case "I": return "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20"
-            case "II": return "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20"
-            case "III": return "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20"
+            case "I": return "border-green-500/20 hover:bg-green-50/50 dark:hover:bg-green-950/20"
+            case "II": return "border-blue-500/20 hover:bg-blue-50/50 dark:hover:bg-blue-950/20"
+            case "III": return "border-purple-500/20 hover:bg-purple-50/50 dark:hover:bg-purple-950/20"
             default: return ""
         }
     }
@@ -103,13 +112,11 @@ export default function DepartmentDetailPage({ params }: { params: Promise<{ dep
                                 Back to Departments
                             </Button>
                             <div>
-                                <h1 className="text-2xl font-semibold">{departmentName} - Select Year</h1>
-                                <p className="text-sm text-muted-foreground">
-                                    Choose a year to view student credentials
-                                </p>
+                                <h1 className="text-2xl font-semibold">{departmentName}</h1>
+                                <p className="text-sm text-muted-foreground">Select a year to view credentials</p>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={handleLogout}>
+                        <Button variant="outline" size="sm" onClick={handleLogout}>
                             <LogOut className="h-4 w-4 mr-2" />
                             Logout
                         </Button>
@@ -117,38 +124,34 @@ export default function DepartmentDetailPage({ params }: { params: Promise<{ dep
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8">
-                <div className="grid gap-6 md:grid-cols-3">
-                    {yearStats.map((stat) => (
-                        <Card
-                            key={stat.year}
-                            className={`cursor-pointer hover:shadow-md transition-shadow border-2 ${getYearColor(stat.year)}`}
-                            onClick={() => router.push(`/dashboard/admin/credentials?department=${encodeURIComponent(departmentName)}&year=${stat.year}`)}
-                        >
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <GraduationCap className="h-5 w-5" />
-                                    {getYearLabel(stat.year)}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-4xl font-bold mb-2">{stat.studentCount}</div>
-                                <p className="text-sm opacity-80">
-                                    {stat.studentCount === 1 ? "Student" : "Students"}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {yearStats.every(s => s.studentCount === 0) && (
-                    <Card className="mt-6">
-                        <CardContent className="py-12 text-center">
-                            <p className="text-muted-foreground">
-                                No students found in {departmentName} department.
-                            </p>
-                        </CardContent>
-                    </Card>
+            <main className="container mx-auto px-4 py-12">
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                ) : (
+                    <div className="grid gap-8 md:grid-cols-3">
+                        {yearStats.map((stat) => (
+                            <Card
+                                key={stat.year}
+                                className={`cursor-pointer transition-all hover:scale-105 border-2 ${getYearColor(stat.year)}`}
+                                onClick={() => router.push(`/dashboard/admin/credentials?department=${encodeURIComponent(departmentName)}&year=${stat.year}`)}
+                            >
+                                <CardHeader className="text-center pb-2">
+                                    <div className="mx-auto bg-muted p-3 rounded-full w-fit mb-2">
+                                        <GraduationCap className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <CardTitle className="text-xl font-bold">{getYearLabel(stat.year)}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="text-center">
+                                    <div className="text-5xl font-extrabold mb-1">{stat.studentCount}</div>
+                                    <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">
+                                        {stat.studentCount === 1 ? "Student" : "Students"}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 )}
             </main>
         </div>

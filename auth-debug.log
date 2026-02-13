@@ -1,0 +1,1160 @@
+
+[2026-02-12T07:16:13.527Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:16:13.560Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:16:14.261Z] Response status
+401
+
+[2026-02-12T07:16:14.266Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-12T07:16:18.954Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:16:18.954Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:16:19.292Z] Response status
+200
+
+[2026-02-12T07:16:19.294Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:16:34.338Z] Authorize called
+{
+  "email": "hod"
+}
+
+[2026-02-12T07:16:34.339Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:16:34.927Z] Response status
+200
+
+[2026-02-12T07:16:34.940Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T07:17:41.789Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:17:41.790Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:17:42.167Z] Response status
+200
+
+[2026-02-12T07:17:42.177Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:18:59.138Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-12T07:18:59.139Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:18:59.632Z] Response status
+401
+
+[2026-02-12T07:18:59.638Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-12T07:21:38.681Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-12T07:21:38.690Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:21:39.818Z] Response status
+200
+
+[2026-02-12T07:21:39.823Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T07:22:16.586Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:22:16.587Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:22:17.000Z] Response status
+200
+
+[2026-02-12T07:22:17.005Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:23:36.879Z] Authorize called
+{
+  "email": "kavinduraisamy"
+}
+
+[2026-02-12T07:23:36.881Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:23:37.110Z] Response status
+401
+
+[2026-02-12T07:23:37.114Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-12T07:27:01.236Z] Authorize called
+{
+  "email": "kavinduraisamy"
+}
+
+[2026-02-12T07:27:01.237Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:27:01.775Z] Response status
+401
+
+[2026-02-12T07:27:01.777Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-12T07:29:34.046Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:29:34.047Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:29:34.419Z] Response status
+200
+
+[2026-02-12T07:29:34.423Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:38:41.172Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:38:41.187Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:38:42.523Z] Response status
+200
+
+[2026-02-12T07:38:42.556Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:45:07.753Z] Authorize called
+{
+  "email": "deepa"
+}
+
+[2026-02-12T07:45:07.754Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:45:08.192Z] Response status
+200
+
+[2026-02-12T07:45:08.197Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T07:46:27.843Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:46:27.868Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:46:28.376Z] Response status
+200
+
+[2026-02-12T07:46:28.603Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:48:04.201Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-12T07:48:04.220Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:48:04.628Z] Response status
+200
+
+[2026-02-12T07:48:04.635Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T07:53:56.776Z] Authorize called
+{
+  "email": "hod"
+}
+
+[2026-02-12T07:53:56.776Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:53:57.139Z] Response status
+200
+
+[2026-02-12T07:53:57.143Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T07:56:38.389Z] Authorize called
+{
+  "email": "admin"
+}
+
+[2026-02-12T07:56:38.390Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:56:38.712Z] Response status
+200
+
+[2026-02-12T07:56:38.715Z] Login Success
+{
+  "role": "ADMIN"
+}
+
+[2026-02-12T07:57:04.348Z] Authorize called
+{
+  "email": "kavin"
+}
+
+[2026-02-12T07:57:04.349Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T07:57:04.608Z] Response status
+200
+
+[2026-02-12T07:57:04.611Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-12T08:01:05.821Z] Authorize called
+{
+  "email": "231cg058"
+}
+
+[2026-02-12T08:01:05.822Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-12T08:01:06.322Z] Response status
+200
+
+[2026-02-12T08:01:06.327Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T04:21:05.880Z] Authorize called
+{
+  "email": "hod"
+}
+
+[2026-02-13T04:21:05.881Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:21:06.735Z] Response status
+200
+
+[2026-02-13T04:21:06.739Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:22:01.626Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:22:01.626Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:22:01.875Z] Response status
+200
+
+[2026-02-13T04:22:01.879Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:33:51.397Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T04:33:51.398Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:33:52.465Z] Response status
+200
+
+[2026-02-13T04:33:52.471Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T04:34:17.642Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:34:17.643Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:34:17.965Z] Response status
+200
+
+[2026-02-13T04:34:17.969Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:37:42.906Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T04:37:42.907Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:37:43.199Z] Response status
+200
+
+[2026-02-13T04:37:43.202Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T04:44:03.182Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:44:03.184Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:44:03.405Z] Login Request Error
+{
+  "message": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Object.authorize (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\[root-of-the-server]__74f487b1._.js:181:38)\n    at async Object.callback (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:1600:20)\n    at async AuthHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3333:38)\n    at async NextAuthRouteHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3501:30)\n    at async NextAuth._args$ (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3536:24)\n    at async AppRouteRouteModule.do (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:37789)\n    at async AppRouteRouteModule.handle (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:45045)\n    at async responseGenerator (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11470:38)\n    at async AppRouteRouteModule.handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:187851)\n    at async handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11532:32)\n    at async handler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11585:13)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1413:9)\n    at async DevServer.renderPageComponent (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1465:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1515:32)\n    at async DevServer.pipeImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1021:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\next-server.js:394:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:912:17)\n    at async C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:382:20\n    at async Span.traceAsyncFn (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\trace\\trace.js:157:20)\n    at async DevServer.handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:378:24)\n    at async invokeRender (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:240:21)\n    at async handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:436:24)\n    at async requestHandlerImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:484:13)\n    at async Server.requestListener (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\start-server.js:226:13)"
+}
+
+[2026-02-13T04:44:09.330Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:44:09.331Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:44:09.390Z] Login Request Error
+{
+  "message": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Object.authorize (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\[root-of-the-server]__74f487b1._.js:181:38)\n    at async Object.callback (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:1600:20)\n    at async AuthHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3333:38)\n    at async NextAuthRouteHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3501:30)\n    at async NextAuth._args$ (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3536:24)\n    at async AppRouteRouteModule.do (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:37789)\n    at async AppRouteRouteModule.handle (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:45045)\n    at async responseGenerator (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11470:38)\n    at async AppRouteRouteModule.handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:187851)\n    at async handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11532:32)\n    at async handler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11585:13)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1413:9)\n    at async DevServer.renderPageComponent (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1465:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1515:32)\n    at async DevServer.pipeImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1021:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\next-server.js:394:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:912:17)\n    at async C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:382:20\n    at async Span.traceAsyncFn (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\trace\\trace.js:157:20)\n    at async DevServer.handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:378:24)\n    at async invokeRender (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:240:21)\n    at async handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:436:24)\n    at async requestHandlerImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:484:13)\n    at async Server.requestListener (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\start-server.js:226:13)"
+}
+
+[2026-02-13T04:44:32.557Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T04:44:32.558Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:44:32.604Z] Login Request Error
+{
+  "message": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Object.authorize (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\[root-of-the-server]__74f487b1._.js:181:38)\n    at async Object.callback (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:1600:20)\n    at async AuthHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3333:38)\n    at async NextAuthRouteHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3501:30)\n    at async NextAuth._args$ (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3536:24)\n    at async AppRouteRouteModule.do (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:37789)\n    at async AppRouteRouteModule.handle (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:45045)\n    at async responseGenerator (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11470:38)\n    at async AppRouteRouteModule.handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:187851)\n    at async handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11532:32)\n    at async handler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11585:13)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1413:9)\n    at async DevServer.renderPageComponent (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1465:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1515:32)\n    at async DevServer.pipeImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1021:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\next-server.js:394:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:912:17)\n    at async C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:382:20\n    at async Span.traceAsyncFn (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\trace\\trace.js:157:20)\n    at async DevServer.handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:378:24)\n    at async invokeRender (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:240:21)\n    at async handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:436:24)\n    at async requestHandlerImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:484:13)\n    at async Server.requestListener (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\start-server.js:226:13)"
+}
+
+[2026-02-13T04:44:33.604Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T04:44:33.606Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:44:33.651Z] Login Request Error
+{
+  "message": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Object.authorize (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\[root-of-the-server]__74f487b1._.js:181:38)\n    at async Object.callback (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:1600:20)\n    at async AuthHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3333:38)\n    at async NextAuthRouteHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3501:30)\n    at async NextAuth._args$ (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3536:24)\n    at async AppRouteRouteModule.do (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:37789)\n    at async AppRouteRouteModule.handle (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:45045)\n    at async responseGenerator (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11470:38)\n    at async AppRouteRouteModule.handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:187851)\n    at async handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11532:32)\n    at async handler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11585:13)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1413:9)\n    at async DevServer.renderPageComponent (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1465:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1515:32)\n    at async DevServer.pipeImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1021:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\next-server.js:394:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:912:17)\n    at async C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:382:20\n    at async Span.traceAsyncFn (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\trace\\trace.js:157:20)\n    at async DevServer.handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:378:24)\n    at async invokeRender (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:240:21)\n    at async handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:436:24)\n    at async requestHandlerImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:484:13)\n    at async Server.requestListener (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\start-server.js:226:13)"
+}
+
+[2026-02-13T04:44:33.881Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T04:44:33.882Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:44:33.913Z] Login Request Error
+{
+  "message": "fetch failed",
+  "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:13510:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Object.authorize (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\[root-of-the-server]__74f487b1._.js:181:38)\n    at async Object.callback (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:1600:20)\n    at async AuthHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3333:38)\n    at async NextAuthRouteHandler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3501:30)\n    at async NextAuth._args$ (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next-auth_f7b4c661._.js:3536:24)\n    at async AppRouteRouteModule.do (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:37789)\n    at async AppRouteRouteModule.handle (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:45045)\n    at async responseGenerator (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11470:38)\n    at async AppRouteRouteModule.handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:187851)\n    at async handleResponse (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11532:32)\n    at async handler (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\.next\\dev\\server\\chunks\\12a93_next_e209463b._.js:11585:13)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1413:9)\n    at async DevServer.renderPageComponent (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1465:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1515:32)\n    at async DevServer.pipeImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:1021:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\next-server.js:394:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\base-server.js:912:17)\n    at async C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:382:20\n    at async Span.traceAsyncFn (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\trace\\trace.js:157:20)\n    at async DevServer.handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:378:24)\n    at async invokeRender (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:240:21)\n    at async handleRequest (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:436:24)\n    at async requestHandlerImpl (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\router-server.js:484:13)\n    at async Server.requestListener (C:\\Users\\darun\\OneDrive\\Desktop\\department-portal-2\\department-portal-2\\node_modules\\next\\dist\\server\\lib\\start-server.js:226:13)"
+}
+
+[2026-02-13T04:46:41.547Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:46:41.549Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:46:42.326Z] Response status
+200
+
+[2026-02-13T04:46:42.333Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:47:29.905Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:47:29.907Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:47:30.155Z] Response status
+200
+
+[2026-02-13T04:47:30.159Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:48:27.143Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T04:48:27.145Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:48:27.685Z] Response status
+200
+
+[2026-02-13T04:48:27.690Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T04:49:42.398Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:49:42.399Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:49:42.851Z] Response status
+401
+
+[2026-02-13T04:49:42.856Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T04:49:48.663Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:49:48.664Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:49:48.936Z] Response status
+200
+
+[2026-02-13T04:49:48.940Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:51:18.654Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T04:51:18.656Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:51:18.956Z] Response status
+200
+
+[2026-02-13T04:51:18.960Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T04:51:37.763Z] Authorize called
+{
+  "email": "vp"
+}
+
+[2026-02-13T04:51:37.764Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:51:38.019Z] Response status
+200
+
+[2026-02-13T04:51:38.022Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T04:52:02.424Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T04:52:02.425Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:52:02.711Z] Response status
+200
+
+[2026-02-13T04:52:02.716Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T04:58:11.234Z] Authorize called
+{
+  "email": "vp"
+}
+
+[2026-02-13T04:58:11.239Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:58:11.819Z] Response status
+200
+
+[2026-02-13T04:58:11.823Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T04:58:28.840Z] Authorize called
+{
+  "email": "vp"
+}
+
+[2026-02-13T04:58:28.841Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T04:58:29.067Z] Response status
+200
+
+[2026-02-13T04:58:29.071Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:00:02.857Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T05:00:02.858Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:00:03.061Z] Response status
+401
+
+[2026-02-13T05:00:03.065Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T05:02:23.505Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T05:02:23.506Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:02:23.745Z] Response status
+200
+
+[2026-02-13T05:02:23.748Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T05:11:45.969Z] Authorize called
+{
+  "email": "231cg001"
+}
+
+[2026-02-13T05:11:45.970Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:11:46.411Z] Response status
+200
+
+[2026-02-13T05:11:46.416Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T05:12:29.796Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:12:29.797Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:12:30.001Z] Response status
+200
+
+[2026-02-13T05:12:30.005Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:12:51.801Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T05:12:51.803Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:12:52.074Z] Response status
+200
+
+[2026-02-13T05:12:52.078Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T05:14:15.890Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:14:15.891Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:14:16.092Z] Response status
+200
+
+[2026-02-13T05:14:16.095Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:14:26.869Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:14:26.870Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:14:27.104Z] Response status
+200
+
+[2026-02-13T05:14:27.108Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:21:47.818Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:21:47.820Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:21:48.164Z] Response status
+200
+
+[2026-02-13T05:21:48.169Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:22:27.358Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T05:22:27.360Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:22:27.680Z] Response status
+200
+
+[2026-02-13T05:22:27.690Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T05:23:05.275Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:23:05.277Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:23:05.526Z] Response status
+200
+
+[2026-02-13T05:23:05.530Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:29:47.381Z] Authorize called
+{
+  "email": "vpp"
+}
+
+[2026-02-13T05:29:47.382Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:29:48.101Z] Response status
+200
+
+[2026-02-13T05:29:48.105Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:30:23.525Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T05:30:23.527Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:30:23.819Z] Response status
+401
+
+[2026-02-13T05:30:23.823Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T05:30:28.126Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T05:30:28.127Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:30:28.329Z] Response status
+200
+
+[2026-02-13T05:30:28.332Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T05:31:04.121Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T05:31:04.122Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T05:31:04.361Z] Response status
+200
+
+[2026-02-13T05:31:04.365Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T06:17:48.530Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:17:48.530Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:17:49.190Z] Response status
+401
+
+[2026-02-13T06:17:49.192Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:17:59.617Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:17:59.618Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:17:59.743Z] Response status
+401
+
+[2026-02-13T06:17:59.745Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:18:03.548Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:18:03.549Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:18:03.682Z] Response status
+200
+
+[2026-02-13T06:18:03.684Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:18:59.657Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T06:18:59.658Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:18:59.795Z] Response status
+200
+
+[2026-02-13T06:18:59.798Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T06:21:35.388Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T06:21:35.389Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:21:35.587Z] Response status
+200
+
+[2026-02-13T06:21:35.589Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T06:24:26.603Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:24:26.603Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:24:26.939Z] Response status
+401
+
+[2026-02-13T06:24:26.941Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:24:30.436Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:24:30.436Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:24:30.564Z] Response status
+200
+
+[2026-02-13T06:24:30.566Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:24:32.926Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:24:32.926Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:24:33.051Z] Response status
+401
+
+[2026-02-13T06:24:33.053Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:24:37.597Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:24:37.597Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:24:37.730Z] Response status
+401
+
+[2026-02-13T06:24:37.732Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:25:17.620Z] Authorize called
+{
+  "email": "senthol"
+}
+
+[2026-02-13T06:25:17.620Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:25:17.788Z] Response status
+401
+
+[2026-02-13T06:25:17.790Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:30:49.072Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:30:49.072Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:30:49.237Z] Response status
+401
+
+[2026-02-13T06:30:49.239Z] Authentication failed
+{
+  "error": "Invalid credentials"
+}
+
+[2026-02-13T06:30:54.480Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:30:54.481Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:30:54.647Z] Response status
+200
+
+[2026-02-13T06:30:54.649Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:31:08.697Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:31:08.698Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:31:08.825Z] Response status
+200
+
+[2026-02-13T06:31:08.829Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:34:22.237Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:34:22.237Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:34:22.793Z] Response status
+200
+
+[2026-02-13T06:34:22.795Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:42:39.220Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:42:39.220Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:42:39.449Z] Response status
+200
+
+[2026-02-13T06:42:39.454Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:46:29.615Z] Authorize called
+{
+  "email": "srinath"
+}
+
+[2026-02-13T06:46:29.616Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:46:29.839Z] Response status
+200
+
+[2026-02-13T06:46:29.841Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T06:47:27.552Z] Authorize called
+{
+  "email": "231cg048"
+}
+
+[2026-02-13T06:47:27.553Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:47:27.783Z] Response status
+200
+
+[2026-02-13T06:47:27.785Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T06:49:43.205Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T06:49:43.206Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:49:43.451Z] Response status
+200
+
+[2026-02-13T06:49:43.453Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T06:57:28.785Z] Authorize called
+{
+  "email": "senthil"
+}
+
+[2026-02-13T06:57:28.785Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T06:57:29.026Z] Response status
+200
+
+[2026-02-13T06:57:29.028Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T07:12:16.741Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T07:12:16.742Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:12:16.948Z] Response status
+200
+
+[2026-02-13T07:12:16.951Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T07:12:39.604Z] Authorize called
+{
+  "email": "231cg001"
+}
+
+[2026-02-13T07:12:39.605Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:12:39.853Z] Response status
+200
+
+[2026-02-13T07:12:39.855Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T07:14:10.663Z] Authorize called
+{
+  "email": "231cg004"
+}
+
+[2026-02-13T07:14:10.664Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:14:10.833Z] Response status
+200
+
+[2026-02-13T07:14:10.835Z] Login Success
+{
+  "role": "STUDENT"
+}
+
+[2026-02-13T07:16:29.289Z] Authorize called
+{
+  "email": "senthil"
+}
+
+[2026-02-13T07:16:29.289Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:16:29.428Z] Response status
+200
+
+[2026-02-13T07:16:29.431Z] Login Success
+{
+  "role": "FACULTY"
+}
+
+[2026-02-13T07:17:05.286Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T07:17:05.286Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:17:05.767Z] Response status
+200
+
+[2026-02-13T07:17:05.769Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T07:18:48.920Z] Authorize called
+{
+  "email": "nirmala"
+}
+
+[2026-02-13T07:18:48.920Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:18:49.213Z] Response status
+200
+
+[2026-02-13T07:18:49.216Z] Login Success
+{
+  "role": "HOD"
+}
+
+[2026-02-13T07:19:50.839Z] Authorize called
+{
+  "email": "senthil"
+}
+
+[2026-02-13T07:19:50.840Z] Fetching http://localhost:5000/api/v1/auth/login
+
+[2026-02-13T07:19:51.006Z] Response status
+200
+
+[2026-02-13T07:19:51.008Z] Login Success
+{
+  "role": "FACULTY"
+}

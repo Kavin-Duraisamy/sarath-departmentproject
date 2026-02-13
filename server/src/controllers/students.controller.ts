@@ -5,18 +5,37 @@ import prisma from '../config/database';
 // Get all students (filtered by department for HOD)
 export const getStudents = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { year, search } = req.query;
+        const { year, search, type, department } = req.query;
         const userRole = req.user?.role;
         const userDepartment = req.user?.department;
 
-        const where: any = {};
+        const where: any = {
+            isAlumni: type === 'alumni'
+        };
 
-        // Filter by department for HOD
-        if (userRole === 'HOD' && userDepartment) {
+        // Enforce department for HOD/FACULTY, allow filter for ADMIN
+        if ((userRole === 'HOD' || userRole === 'FACULTY') && userDepartment) {
             where.department = userDepartment;
+        } else if (department) {
+            where.department = department;
         }
 
-        // Filter by year if provided
+        // Filter by assignedYears for FACULTY
+        if (userRole === 'FACULTY' && userDepartment) {
+            where.department = userDepartment;
+
+            // Get faculty's assigned years
+            const faculty = await prisma.user.findUnique({
+                where: { id: req.user?.id },
+                select: { assignedYears: true }
+            });
+
+            if (faculty?.assignedYears && faculty.assignedYears.length > 0) {
+                where.year = { in: faculty.assignedYears };
+            }
+        }
+
+        // Filter by year if provided (overrides assignedYears if more specific)
         if (year && year !== 'all') {
             where.year = year;
         }
@@ -48,6 +67,8 @@ export const getStudents = async (req: Request, res: Response): Promise<void> =>
                 motherPhone: true,
                 guardianName: true,
                 guardianPhone: true,
+                passedOutYear: true,
+                updatedAt: true,
             },
             orderBy: { rollNumber: 'asc' },
         });
@@ -71,7 +92,15 @@ export const getStudent = async (req: Request, res: Response): Promise<void> => 
                 internships: true,
                 resumes: true,
                 certificates: true,
-                projects: true,
+                projects: {
+                    include: {
+                        history: {
+                            orderBy: {
+                                createdAt: 'desc'
+                            }
+                        }
+                    }
+                },
             },
         });
 
@@ -109,14 +138,29 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
             department = currentUser.department;
         }
 
+        // Check for existing student (case-insensitive roll number or email)
+        const existingStudent = await prisma.student.findFirst({
+            where: {
+                OR: [
+                    { rollNumber: { equals: rollNumber, mode: 'insensitive' } },
+                    { email: { equals: email, mode: 'insensitive' } }
+                ]
+            }
+        });
+
+        if (existingStudent) {
+            res.status(409).json({ error: 'Student with this roll number or email already exists' });
+            return;
+        }
+
         // Hash the DOB as password
         const hashedPassword = await bcrypt.hash(dob, 10);
 
         const student = await prisma.student.create({
             data: {
                 name,
-                rollNumber,
-                email,
+                rollNumber: rollNumber.toUpperCase(), // Ensure uppercase
+                email: email.toLowerCase(),
                 phone: phone || '',
                 year,
                 department,
@@ -381,7 +425,7 @@ export const deleteResume = async (req: Request, res: Response): Promise<void> =
 export const addProject = async (req: Request, res: Response): Promise<void> => {
     try {
         const id = req.params.id as string;
-        const { title, description, technologies, guide, guideEmail, duration, type, status, githubUrl, liveUrl } = req.body;
+        const { title, description, technologies, guide, guideEmail, duration, type, status, githubUrl, liveUrl, remarks, approvedAt } = req.body;
 
         const project = await prisma.project.create({
             data: {
@@ -394,15 +438,162 @@ export const addProject = async (req: Request, res: Response): Promise<void> => 
                 guideEmail,
                 duration,
                 type,
-                status,
+                status: status || 'pending',
                 githubUrl,
-                liveUrl
+                liveUrl,
+                remarks,
+                approvedAt,
+                history: {
+                    create: {
+                        status: status || 'pending',
+                        remarks: 'Project submitted',
+                        actionBy: req.user?.name || 'Student'
+                    }
+                }
             },
         });
         res.json(project);
     } catch (error) {
         console.error('Add project error:', error);
         res.status(500).json({ error: 'Failed to add project' });
+    }
+};
+
+// Update Project Status (Approve/Reject)
+export const updateProjectStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const projectId = req.params.projectId as string;
+        const { status, remarks } = req.body;
+
+        const updateData: any = { status, remarks };
+
+        if (status === 'approved') {
+            updateData.approvedAt = new Date();
+            if (req.user?.name) {
+                updateData.approvedBy = req.user.name;
+            }
+        }
+
+        const project = await prisma.project.update({
+            where: { id: projectId },
+            data: {
+                ...updateData,
+                history: {
+                    create: {
+                        status: status,
+                        remarks: remarks || (status === 'approved' ? 'Approved' : 'Rejected'),
+                        actionBy: req.user?.name || 'Faculty'
+                    }
+                }
+            }
+        });
+        res.json(project);
+    } catch (error) {
+        console.error('Update project status error:', error);
+        res.status(500).json({ error: 'Failed to update project status' });
+    }
+};
+
+// Get Projects for Faculty (Guides)
+export const getFacultyProjects = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const currentUser = req.user;
+        if (!currentUser) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        // Find projects where the guideEmail matches the current user's email or username
+        // We check both because sometimes guideEmail might be stored as username or generic email
+        console.log(`[getFacultyProjects] Looking for projects for email: "${currentUser.email}" or username: "${currentUser.username}"`);
+
+        const projects = await prisma.project.findMany({
+            where: {
+                OR: [
+                    { guideEmail: currentUser.email },
+                    { guideEmail: currentUser.username }
+                ]
+            },
+            include: {
+                student: {
+                    select: {
+                        name: true,
+                        rollNumber: true,
+                        year: true,
+                        department: true // Helpful context
+                    }
+                },
+                faculty: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                },
+                history: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        console.log(`[getFacultyProjects] Found ${projects.length} projects`);
+        res.json(projects);
+    } catch (error) {
+        console.error('Get faculty projects error:', error);
+        res.status(500).json({ error: 'Failed to fetch faculty projects' });
+    }
+};
+
+export const getAllProjects = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const currentUser = req.user;
+        if (!currentUser) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        let where = {};
+        // If HOD, filter by department
+        if (currentUser.role === 'HOD' && currentUser.department) {
+            where = {
+                student: {
+                    department: currentUser.department
+                }
+            };
+        }
+
+        const projects = await prisma.project.findMany({
+            where,
+            include: {
+                student: {
+                    select: {
+                        name: true,
+                        rollNumber: true,
+                        year: true,
+                        department: true
+                    }
+                },
+                faculty: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                },
+                history: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json(projects);
+    } catch (error) {
+        console.error('Get all projects error:', error);
+        res.status(500).json({ error: 'Failed to fetch projects' });
     }
 };
 
@@ -547,5 +738,45 @@ export const getAcademics = async (req: Request, res: Response): Promise<void> =
     } catch (error) {
         console.error('Get academics error:', error);
         res.status(500).json({ error: 'Failed to fetch academics' });
+    }
+};
+// Reset Student Password (to DOB)
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const currentUser = req.user;
+
+        if (!currentUser || (currentUser.role !== 'HOD' && currentUser.role !== 'ADMIN')) {
+            res.status(403).json({ error: 'Unauthorized: Only HOD or Admin can reset passwords' });
+            return;
+        }
+
+        const student = await prisma.student.findUnique({
+            where: { id: id as string },
+            select: { dob: true, department: true }
+        });
+
+        if (!student) {
+            res.status(404).json({ error: 'Student not found' });
+            return;
+        }
+
+        // RBAC: HOD can only reset passwords for their department
+        if (currentUser.role === 'HOD' && currentUser.department && student.department !== currentUser.department) {
+            res.status(403).json({ error: 'Unauthorized: You can only reset passwords for your department' });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(student.dob, 10);
+
+        await prisma.student.update({
+            where: { id: id as string },
+            data: { password: hashedPassword }
+        });
+
+        res.json({ message: `Password reset successfully to DOB: ${student.dob}` });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

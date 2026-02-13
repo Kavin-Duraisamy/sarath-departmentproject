@@ -4,12 +4,15 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, GraduationCap, Building2, TrendingUp, LogOut, RefreshCw, Bell, Clock } from "lucide-react"
+import { Users, GraduationCap, Building2, TrendingUp, LogOut, RefreshCw, Bell, Clock, BarChart3 } from "lucide-react"
 
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
+import { apiClient } from "@/lib/api"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function HODDashboard() {
   const router = useRouter()
+  const { toast } = useToast()
   const { data: session, status } = useSession()
   const [user, setUser] = useState<any>(null)
   const [stats, setStats] = useState({
@@ -18,6 +21,7 @@ export default function HODDashboard() {
     totalCompanies: 0,
     placementRate: 0,
   })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === "loading") return
@@ -27,54 +31,58 @@ export default function HODDashboard() {
     }
 
     const userData = session?.user
-    if (!userData || userData.role !== "hod") {
+    if (!userData || userData.role?.toLowerCase() !== "hod") {
       if (userData?.role) {
-        router.push(`/dashboard/${userData.role}`)
+        router.push(`/dashboard/${userData.role.toLowerCase()}`)
       } else {
         router.push("/")
       }
       return
     }
 
-    // Keep using localStorage for STATS data only (not auth) as requested to minimize changes
-    // But use session for identity
-    setUser(userData)
-
-    // Load statistics from API
-    const loadStats = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/students`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-          }
-        });
-
-        if (response.ok) {
-          const students = await response.json();
-          setStats(prev => ({
-            ...prev,
-            totalStudents: students.length,
-          }));
-        }
-
-        // Load other stats if endpoints exist, otherwise keep defaults
-        const companiesStr = localStorage.getItem("companies") || "[]"
-        const companies = JSON.parse(companiesStr)
-        setStats(prev => ({
-          ...prev,
-          totalCompanies: companies.length,
-        }))
-      } catch (e) {
-        console.error("Failed to load stats", e)
-      }
+    // Sync accessToken to localStorage for apiClient
+    if ((session as any)?.accessToken) {
+      localStorage.setItem("accessToken", (session as any).accessToken);
     }
 
+    setUser(userData)
     loadStats()
   }, [session, status, router])
 
+  const loadStats = async () => {
+    try {
+      setLoading(true)
+      const [studentsRes, usersRes, placementStatsRes] = await Promise.all([
+        apiClient.getStudents(),
+        apiClient.getUsers(),
+        apiClient.getPlacementStats()
+      ])
+
+      const students = studentsRes.data
+      const allUsers = usersRes.data
+      const placementStats = placementStatsRes.data
+
+      const facultyUsers = allUsers.filter((u: any) => u.role === 'FACULTY')
+
+      setStats({
+        totalStudents: students.length,
+        totalFaculty: facultyUsers.length,
+        totalCompanies: placementStats.companies || 0,
+        placementRate: placementStats.placementRate || 0
+      })
+    } catch (e) {
+      console.error("Failed to load stats", e)
+      toast({
+        title: "Warning",
+        description: "Some dashboard statistics could not be loaded.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleLogout = async () => {
-    // localStorage.removeItem("user") // Optional: clear legacy data
-    const { signOut } = await import("next-auth/react")
     await signOut({ redirect: true, callbackUrl: "/" })
   }
 
@@ -89,166 +97,190 @@ export default function HODDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold">HOD Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Welcome, {user.name}</p>
+              <p className="text-sm text-muted-foreground">Welcome back, {user.name}</p>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={loadStats} disabled={loading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <Card>
+          <Card className="border-l-4 border-l-blue-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalStudents}</div>
-              <p className="text-xs text-muted-foreground mt-1">Across all years</p>
+              <div className="text-2xl font-bold">{loading ? "..." : stats.totalStudents}</div>
+              <p className="text-xs text-muted-foreground mt-1">Across all batches</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-green-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Faculty Members</CardTitle>
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <GraduationCap className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalFaculty}</div>
-              <p className="text-xs text-muted-foreground mt-1">Teaching staff</p>
+              <div className="text-2xl font-bold">{loading ? "..." : stats.totalFaculty}</div>
+              <p className="text-xs text-muted-foreground mt-1">Active staff</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-purple-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Companies</CardTitle>
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Partner Companies</CardTitle>
+              <Building2 className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalCompanies}</div>
-              <p className="text-xs text-muted-foreground mt-1">For placements</p>
+              <div className="text-2xl font-bold">{loading ? "..." : stats.totalCompanies}</div>
+              <p className="text-xs text-muted-foreground mt-1">Placement drives</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-orange-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Placement Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.placementRate}%</div>
-              <p className="text-xs text-muted-foreground mt-1">Final year students</p>
+              <div className="text-2xl font-bold">{loading ? "..." : stats.placementRate}%</div>
+              <p className="text-xs text-muted-foreground mt-1">Current academic year</p>
             </CardContent>
           </Card>
         </div>
 
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+          Management Hub
+        </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-blue-500/50"
             onClick={() => router.push("/dashboard/hod/students")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-blue-600">
                 <Users className="h-5 w-5" />
                 Manage Students
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">View and manage all student records across all years</p>
+              <p className="text-sm text-muted-foreground">Comprehensive student records, profiles, and academic monitoring</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-green-500/50"
             onClick={() => router.push("/dashboard/hod/batch-progression")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-green-600">
                 <RefreshCw className="h-5 w-5" />
                 Batch Progression
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Progress batches to next year and manage transitions</p>
+              <p className="text-sm text-muted-foreground">Manage academic year transitions and promote batches</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-emerald-500/50"
             onClick={() => router.push("/dashboard/hod/faculty")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-emerald-600">
                 <GraduationCap className="h-5 w-5" />
                 Faculty Management
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Assign classes and manage faculty workload</p>
+              <p className="text-sm text-muted-foreground">View staff details, assign years, and manage credentials</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-cyan-500/50"
             onClick={() => router.push("/dashboard/hod/timetable")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-cyan-600">
                 <Clock className="h-5 w-5" />
                 Timetable Management
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Customize schedule and assign faculty periods</p>
+              <p className="text-sm text-muted-foreground">Design departmental schedule and periodic slot distribution</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => router.push("/dashboard/hod/placements")}
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-purple-500/50"
+            onClick={() => router.push("/dashboard/placement")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-purple-600">
                 <Building2 className="h-5 w-5" />
-                Placement Overview
+                Placement Portal
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Monitor placement activities and statistics</p>
+              <p className="text-sm text-muted-foreground">Monitor campus drives, company logs and student applications</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-amber-500/50"
             onClick={() => router.push("/dashboard/hod/projects")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 group-hover:text-amber-600">
+                <FolderGit2 className="h-5 w-5" />
                 Project Approvals
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Review and approve student projects</p>
+              <p className="text-sm text-muted-foreground">Review and endorse student projects and internships</p>
             </CardContent>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-red-500/50"
             onClick={() => router.push("/dashboard/hod/notifications")}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 group-hover:text-red-600">
                 <Bell className="h-5 w-5" />
                 Announcements
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Send notifications to students and faculty</p>
+              <p className="text-sm text-muted-foreground">Broadcast critical updates to departmental community</p>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="cursor-pointer hover:shadow-lg transition-all group hover:border-slate-500/50"
+            onClick={() => router.push("/dashboard/placement/reports")}
+          >
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 group-hover:text-slate-600">
+                <BarChart3 className="h-5 w-5" />
+                Insightful Reports
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Advanced analytics and data visualization for department growth</p>
             </CardContent>
           </Card>
         </div>
@@ -256,3 +288,5 @@ export default function HODDashboard() {
     </div>
   )
 }
+
+import { FolderGit2 } from "lucide-react"

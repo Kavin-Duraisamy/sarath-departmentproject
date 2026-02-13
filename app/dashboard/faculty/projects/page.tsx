@@ -6,110 +6,93 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { findSimilarProjects, detectDomain } from "@/lib/similarity"
+import { apiClient } from "@/lib/api"
+import { format } from "date-fns"
 
 export default function FacultyProjectsPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [projects, setProjects] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Similarity Dialog
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [similarProjects, setSimilarProjects] = useState<any[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isSimilarityDialogOpen, setIsSimilarityDialogOpen] = useState(false)
+
+  // Action Dialog (Approve/Reject)
+  const [actionProject, setActionProject] = useState<any>(null)
+  const [actionType, setActionType] = useState<"approved" | "rejected" | null>(null)
+  const [remarks, setRemarks] = useState("")
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
-      router.push("/")
-      return
-    }
+    const fetchProjects = async () => {
+      try {
+        const res = await apiClient.getCurrentUser();
+        const userData = res.data;
 
-    const userData = JSON.parse(storedUser)
-    if (userData.role !== "faculty") {
-      router.push(`/dashboard/${userData.role}`)
-      return
-    }
+        if (userData.role !== "FACULTY" && userData.role !== "HOD") {
+          // Redirect if not faculty/hod (though middleware should handle this)
+          router.push(`/dashboard/${userData.role.toLowerCase()}`)
+          return;
+        }
 
-    setUser(userData)
+        setUser(userData);
 
-    const students = JSON.parse(localStorage.getItem("students") || "[]")
-    const allProjects: any[] = []
-
-    students.forEach((student: any) => {
-      const projectsData = JSON.parse(localStorage.getItem(`student_projects_${student.id}`) || "{}")
-
-      if (projectsData.intern?.title && projectsData.intern.guideEmail === userData.username) {
-        const domain = detectDomain(projectsData.intern.description || projectsData.intern.title)
-        allProjects.push({
-          id: `intern-${student.id}`,
-          studentId: student.id,
-          studentName: student.name,
-          rollNumber: student.rollNumber,
-          type: "Internship",
-          title: projectsData.intern.title,
-          description: projectsData.intern.description,
-          technologies: projectsData.intern.technologies || "",
-          domain,
-          status: projectsData.intern.status || "pending",
-        })
+        const projectsRes = await apiClient.getFacultyProjects();
+        if (projectsRes.data) {
+          // Enhance projects with domain detection
+          const enhancedProjects = projectsRes.data.map((p: any) => ({
+            ...p,
+            domain: detectDomain(p.description || p.title),
+            studentName: p.student?.name,
+            rollNumber: p.student?.rollNumber
+          }));
+          setProjects(enhancedProjects);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      if (projectsData.final?.title && projectsData.final.guideEmail === userData.username) {
-        const domain = detectDomain(projectsData.final.description || projectsData.final.title)
-        allProjects.push({
-          id: `final-${student.id}`,
-          studentId: student.id,
-          studentName: student.name,
-          rollNumber: student.rollNumber,
-          type: "Final Year",
-          title: projectsData.final.title,
-          description: projectsData.final.description,
-          technologies: projectsData.final.technologies || "",
-          domain,
-          status: projectsData.final.status || "pending",
-        })
-      }
-    })
-
-    setProjects(allProjects)
+    fetchProjects();
   }, [router])
 
-  const handleApprove = (projectId: string) => {
-    const project = projects.find((p) => p.id === projectId)
-    if (!project) return
-
-    const projectsData = JSON.parse(localStorage.getItem(`student_projects_${project.studentId}`) || "{}")
-
-    if (project.type === "Internship") {
-      projectsData.intern.status = "approved"
-    } else {
-      projectsData.final.status = "approved"
-    }
-
-    localStorage.setItem(`student_projects_${project.studentId}`, JSON.stringify(projectsData))
-
-    // Reload projects
-    const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, status: "approved" } : p))
-    setProjects(updatedProjects)
+  const openActionDialog = (project: any, type: "approved" | "rejected") => {
+    setActionProject(project)
+    setActionType(type)
+    setRemarks("")
+    setIsActionDialogOpen(true)
   }
 
-  const handleReject = (projectId: string) => {
-    const project = projects.find((p) => p.id === projectId)
-    if (!project) return
+  const handleActionSubmit = async () => {
+    if (!actionProject || !actionType) return;
 
-    const projectsData = JSON.parse(localStorage.getItem(`student_projects_${project.studentId}`) || "{}")
+    try {
+      await apiClient.updateProjectStatus(actionProject.studentId, actionProject.id, {
+        status: actionType,
+        remarks: remarks
+      });
 
-    if (project.type === "Internship") {
-      projectsData.intern.status = "rejected"
-    } else {
-      projectsData.final.status = "rejected"
+      // Update local state
+      setProjects(prev => prev.map(p =>
+        p.id === actionProject.id
+          ? { ...p, status: actionType, remarks: remarks, approvedAt: actionType === 'approved' ? new Date().toISOString() : null }
+          : p
+      ));
+
+      setIsActionDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to update project status", error);
+      alert("Failed to update project status");
     }
-
-    localStorage.setItem(`student_projects_${project.studentId}`, JSON.stringify(projectsData))
-
-    // Reload projects
-    const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, status: "rejected" } : p))
-    setProjects(updatedProjects)
   }
 
   const handleViewSimilarity = (project: any) => {
@@ -125,11 +108,11 @@ export default function FacultyProjectsPage() {
 
     setSelectedProject(project)
     setSimilarProjects(similar)
-    setIsDialogOpen(true)
+    setIsSimilarityDialogOpen(true)
   }
 
-  if (!user) {
-    return null
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>
   }
 
   return (
@@ -169,7 +152,7 @@ export default function FacultyProjectsPage() {
                         {project.studentName} ({project.rollNumber})
                       </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <Badge variant="outline">{project.type}</Badge>
                       <Badge variant="secondary">{project.domain}</Badge>
                       {project.status === "approved" && <Badge variant="default">Approved</Badge>}
@@ -179,35 +162,94 @@ export default function FacultyProjectsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {project.description && <p className="text-sm text-muted-foreground">{project.description}</p>}
-                  {project.technologies && (
-                    <div>
-                      <span className="text-sm font-medium">Technologies: </span>
-                      <span className="text-sm text-muted-foreground">{project.technologies}</span>
+
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    {project.technologies && (
+                      <div>
+                        <span className="font-medium">Technologies: </span>
+                        <span>{project.technologies}</span>
+                      </div>
+                    )}
+                    {project.duration && (
+                      <div>
+                        <span className="font-medium">Duration: </span>
+                        <span>{project.duration}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {project.remarks && (
+                    <div className="bg-muted p-3 rounded-md text-sm">
+                      <span className="font-semibold block mb-1">Remarks:</span>
+                      {project.remarks}
+                      {project.approvedAt && project.status === 'approved' && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Approved on: {format(new Date(project.approvedAt), "PPP p")}
+                        </div>
+                      )}
                     </div>
                   )}
-                  {project.status === "pending" && (
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="default" onClick={() => handleApprove(project.id)}>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Approve
+
+                  <div className="flex gap-2 pt-2">
+                    {project.status === "pending" ? (
+                      <>
+                        <Button size="sm" variant="default" onClick={() => openActionDialog(project, "approved")}>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approve
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => openActionDialog(project, "rejected")}>
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Reject
+                        </Button>
+                      </>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={() => openActionDialog(project, project.status === 'approved' ? 'rejected' : 'approved')}>
+                        Change Status
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleReject(project.id)}>
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
-                      <Button size="sm" variant="secondary" onClick={() => handleViewSimilarity(project)}>
-                        <AlertTriangle className="h-4 w-4 mr-2" />
-                        Check Similarity
-                      </Button>
-                    </div>
-                  )}
+                    )}
+
+                    <Button size="sm" variant="secondary" onClick={() => handleViewSimilarity(project)}>
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Check Similarity
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        {/* Action Dialog */}
+        <Dialog open={isActionDialogOpen} onOpenChange={setIsActionDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{actionType === 'approved' ? 'Approve Project' : 'Reject Project'}</DialogTitle>
+              <DialogDescription>
+                Add remarks for the student regarding this decision.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="remarks">Remarks</Label>
+                <Textarea
+                  id="remarks"
+                  placeholder="Enter your remarks here..."
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsActionDialogOpen(false)}>Cancel</Button>
+              <Button variant={actionType === 'approved' ? 'default' : 'destructive'} onClick={handleActionSubmit}>
+                Confirm {actionType === 'approved' ? 'Approval' : 'Rejection'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Similarity Dialog */}
+        <Dialog open={isSimilarityDialogOpen} onOpenChange={setIsSimilarityDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>AI Similarity Analysis</DialogTitle>
